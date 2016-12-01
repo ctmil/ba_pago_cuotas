@@ -82,7 +82,7 @@ class sale_cuotas(models.Model):
                         #else:
                         #       display_value = 'QTA BREAKPOINT ' + str(partnerinfo.min_quantity) + ' LEADTIME ' + str(partnerinfo.leadtime)
 			if sale_cuota.journal_id and sale_cuota.bank_id and sale_cuota.cuotas:
-                                display_value = sale_cuota.journal_id.name + ' - ' sale_cuota.bank_id.name + ' - ' + str(sale_cuota.cuotas)
+                                display_value = sale_cuota.journal_id.name + ' - ' + sale_cuota.bank_id.name + ' - ' + str(sale_cuota.cuotas)
                         data.append((sale_cuota.id,display_value))
                 return data
 
