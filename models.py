@@ -88,13 +88,27 @@ class sale_cuotas(models.Model):
 	@api.one
 	@api.constrains('cuotas')
 	def _check_cuotas(self):
-		if self.cuotas > 36:
+		if self.cuotas > 36 or self.cuotas < 1:
 			raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
+
+	@api.one
+	@api.constrains('coeficiente')
+	def _check_coeficiente(self):
+		if self.coeficiente > 5 or self.coeficiente < 0:
+			raise ValidationError('El coeficiente ingresado debe ser entre 0 y 5')
+
+	@api.one
+	@api.constrains('bank_id','journal_id','cuotas')
+	def _check_unique(self):
+		cuotas = self.search([('journal_id','=',self.journal_id.id),\
+				('bank_id','=',self.bank_id.id),('cuotas','=',self.cuotas)])
+		if len(cuotas) > 1:
+			raise ValidationError('El plan de cuotas ya esta ingresado')
 	
-	name = fields.Char('Nombre',readonly=True,compute=_compute_name,store=True)
+	name = fields.Char('Nombre',readonly=True,compute=_compute_name)
 	bank_id = fields.Many2one('res.bank',string='Banco',required=True)
 	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',('cash','banks'))],required=True)
-	cuotas = fields.Integer(string='Cuotas')
+	cuotas = fields.Integer(string='Cuotas',help='Cantidad de cuotas, debe ser menor a 36')
 	product_id = fields.Many2one('product.product',string='Producto')
 	monto = fields.Float(string='Monto')
-	coeficiente = fields.Float(string='Coeficiente')
+	coeficiente = fields.Float(string='Coeficiente',help='Porcentaje de coeficiente, debe ser un valor entre 0 y 5')
