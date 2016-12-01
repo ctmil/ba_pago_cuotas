@@ -28,16 +28,16 @@ class pos_make_payment(osv.osv_memory):
 	        amount = order.amount_total - order.amount_paid
         	data = self.read(cr, uid, ids, context=context)[0]
 
-		if data['journal_id']:
-			journal = self.pool.get('account.journal').browse(cr,uid,data['journal_id'][0])
-			if journal.sale_cuotas_id:
+		if data['cuotas_id']:
+			cuotas = self.pool.get('sale.cuotas').browse(cr,uid,data['cuotas_id'][0])
+			if cuotas:
 				vals_line = {
-					'product_id': journal.sale_cuotas_id.product_id.id,
+					'product_id': cuotas.product_id.id,
 					'order_id': context['active_id'],
-					'display_name': journal.sale_cuotas_id.name,
+					'display_name': cuotas.name,
 					'qty': 1,
-					'price_unit': journal.sale_cuotas_id.monto,
-					'price_subtotal': journal.sale_cuotas_id.monto,
+					'price_unit': data['monto_recargo'],
+					'price_subtotal': data['monto_recargo'],
 					}
 				line_id = self.pool.get('pos.order.line').create(cr,uid,vals_line)
 		res = super(pos_make_payment,self).check(cr,uid,ids,context)
