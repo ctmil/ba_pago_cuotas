@@ -16,11 +16,13 @@ class pos_make_payment(models.TransientModel):
         _inherit = 'pos.make.payment'
 
         order_amount = fields.Float('Monto del pedido')
-        cuotas = fields.Integer('Cuotas')
+        #cuotas = fields.Integer('Cuotas')
         monto_recargo = fields.Float('Monto Recargo')
         total_amount = fields.Float('Monto total con recargos')
         journal_id = fields.Many2one('account.journal',string='Payment Mode',required=True,domain=[('journal_user','=',True)])
+	cuotas_id = fields.Many2one('sale.cuotas',string='Plan de cuotas')	
 
+	"""
         @api.onchange('journal_id')
         def change_journal_id(self):
                 if self.journal_id.sale_cuotas_id:
@@ -36,7 +38,7 @@ class pos_make_payment(models.TransientModel):
                         self.cuotas = 0
                         self.monto_recargo = 0
                         self.total_amount = self.amount
-
+	"""
 
 
 class sale_order(models.Model):
