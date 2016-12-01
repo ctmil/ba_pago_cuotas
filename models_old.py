@@ -27,7 +27,6 @@ class pos_make_payment(osv.osv_memory):
 	        order = order_obj.browse(cr, uid, active_id, context=context)
 	        amount = order.amount_total - order.amount_paid
         	data = self.read(cr, uid, ids, context=context)[0]
-
 		if data['cuotas_id']:
 			cuotas = self.pool.get('sale.cuotas').browse(cr,uid,data['cuotas_id'][0])
 			if cuotas:
@@ -36,10 +35,12 @@ class pos_make_payment(osv.osv_memory):
 					'order_id': context['active_id'],
 					'display_name': cuotas.name,
 					'qty': 1,
-					'price_unit': data['monto_recargo'],
-					'price_subtotal': data['monto_recargo'],
+					'price_unit': amount * cuotas.coeficiente,
+					'price_subtotal': amount * cuotas.coeficiente,
 					}
 				line_id = self.pool.get('pos.order.line').create(cr,uid,vals_line)
+				if cuotas.coeficiente > 0:
+					data['amount'] = amount * (1+cuotas.coeficiente)
 		res = super(pos_make_payment,self).check(cr,uid,ids,context)
 		return {'type': 'ir.actions.act_window_close'}
 
