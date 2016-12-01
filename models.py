@@ -69,9 +69,27 @@ class sale_cuotas(models.Model):
 	_name = 'sale.cuotas'
 	_description = 'Permite indicar que monto agregar por cobro en cuotas'
 
-	name = fields.Char('Nombre')
-	bank_id = fields.Many2one('res.bank',string='Banco')
-	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',('cash','banks'))])
+        @api.multi
+        def name_get(self):
+                res = super(sale_cuotas,self).name_get()
+                data = []
+                min_qty = 0
+                for sale_cuota in self:
+                        # import pdb;pdb.set_trace()
+                        #if partnerinfo.min_quantity > min_qty:
+                        #       display_value = 'STD BREAKPOINT ' + str(partnerinfo.min_quantity) + ' LEADTIME ' + str(partnerinfo.leadtime)
+                        #       min_qty = partnerinfo.min_quantity
+                        #else:
+                        #       display_value = 'QTA BREAKPOINT ' + str(partnerinfo.min_quantity) + ' LEADTIME ' + str(partnerinfo.leadtime)
+			if sale_cuota.journal_id and sale_cuota.bank_id and sale_cuota.cuotas:
+                                display_value = sale_cuota.journal_id.name + ' - ' sale_cuota.bank_id.name + ' - ' + str(sale_cuota.cuotas)
+                        data.append((sale_cuota.id,display_value))
+                return data
+
+	
+	name = fields.Char('Nombre',readonly=True)
+	bank_id = fields.Many2one('res.bank',string='Banco',required=True)
+	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',('cash','banks'))],required=True)
 	cuotas = fields.Integer(string='Cuotas')
 	product_id = fields.Many2one('product.product',string='Producto')
 	monto = fields.Float(string='Monto')
