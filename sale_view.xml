@@ -78,7 +78,7 @@
                 <field name="amount" position="after">
                         <field name="total_amount" readonly="1"/>
                         <field name="monto_recargo" readonly="1"/>
-                        <!-- field name="cuotas" readonly="1"/ -->
+                        <field name="cuotas" readonly="1"/>
                 </field>
             </field>
         </record>
