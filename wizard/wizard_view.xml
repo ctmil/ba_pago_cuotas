@@ -1,0 +1,52 @@
+<openerp>
+	<data>
+
+		<record id="ba_product_update_prices" model="ir.ui.view">
+			<field name="name">Actualizar Precios/Costos</field>
+			<field name="model">product.update.prices</field>
+			<field name="arch" type="xml">
+				<form string="Actualizar Precios/Costos">
+					<group string="Parametros">
+						<field name="categ_id" />
+						<field name="product_id" />
+						<field name="supplier_id" />
+					</group>
+					<group string="Porcentajes">
+						<field name="list_price_update" />
+						<field name="cost_price_update" />
+					</group>
+					<button name="update_costs" type="object" string="Actualizar" /> 
+				</form>
+			</field>
+		</record>
+
+            <record id="action_update_prices_costs" model="ir.actions.act_window">
+                <field name="name">Actualizar Precios y Costos</field>
+                <field name="type">ir.actions.act_window</field>
+                <field name="src_model">product.product</field>
+                <field name="res_model">product.update.prices</field>
+                <field name="view_type">form</field>
+                <field name="view_mode">form</field>
+                <field name="target">new</field>
+            </record>
+
+        <menuitem action="action_update_prices_costs" id="menu_update_prices_costs"
+                parent="base.menu_product"
+                sequence="15"/>
+
+	<record id="ba_product_update_prices" model="ir.ui.view">
+		<field name="name">Actualizar Precios/Costos</field>
+		<field name="model">add.sale.order.cuotas</field>
+		<field name="arch" type="xml">
+			<form string="Actualizar Precios/Costos">
+				<group string="Parametros">
+					<field name="sale_cuotas_id" />
+				</group>
+				<button name="insert_cuotas" type="object" string="Agregar Cuotas" /> 
+			</form>
+		</field>
+            </record>
+
+
+	</data>
+</openerp>

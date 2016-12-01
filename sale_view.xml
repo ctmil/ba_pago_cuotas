@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record id="sale_cuotas_form_view" model="ir.ui.view">
+            <field name="name">sale.cuotas.form.view</field>
+            <field name="model">sale.cuotas</field>
+            <field name="arch" type="xml">
+                <form string="Monto por Cuotas">
+			<group string="Tipo de pago y producto a agregar">
+		    	    <field name="name" />
+	                    <field name="journal_id"/>
+        	            <field name="product_id"/>
+			</group>
+			<group string="Cuotas y monto">
+		                 <field name="cuotas"/>
+        	            <field name="monto"/>
+			</group>
+                </form>
+            </field>
+        </record>
+
+        <record id="sale_cuotas_tree_view" model="ir.ui.view">
+            <field name="name">sale.cuotas.tree.view</field>
+            <field name="model">sale.cuotas</field>
+            <field name="arch" type="xml">
+                <tree string="Monto por Cuotas">
+		    <field name="name" />
+                    <field name="journal_id"/>
+                    <field name="product_id"/>
+                    <field name="cuotas"/>
+                    <field name="monto"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="action_ba_cuotas_config" model="ir.actions.act_window">
+            <field name="name">Cuotas</field>
+            <field name="res_model">sale.cuotas</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <menuitem id="menu_ba_prices" name="Precios" parent="base.menu_product" sequence="12"
+                action="action_ba_prices" />
+
+        <menuitem id="menu_ba_sales_config" name="Blancoamor" 
+            parent="base.menu_base_config" sequence="100"/>
+
+        <menuitem id="menu_ba_sales_cuotas" name="Cuotas" 
+            parent="menu_ba_sales_config" 
+	    action="action_ba_cuotas_config"
+	    sequence="100"/>
+
+        <record id="view_sale_order_form_ba" model="ir.ui.view">
+            <field name="name">sale.order.form.ba</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <button name="action_view_invoice" position="after">
+                        <button name="add_cuotas" type="object" string="Agregar cuotas"
+                                states="draft" />
+                </button>
+            </field>
+        </record>
+
+
+
+    </data>
+</openerp>
