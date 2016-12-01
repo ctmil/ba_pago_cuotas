@@ -44,7 +44,7 @@ class pos_make_payment(osv.osv_memory):
 						'amount': amount * (1+cuotas.coeficiente)
 						}
 					data['amount'] = amount * (1+cuotas.coeficiente)
-					return_id = self.pool.get('pos.make.payment').write(cr,uid,ids,valsids,vals)
+					return_id = self.pool.get('pos.make.payment').write(cr,uid,ids,vals)
 		res = super(pos_make_payment,self).check(cr,uid,ids,context)
 		return {'type': 'ir.actions.act_window_close'}
 
