@@ -86,7 +86,7 @@ class sale_cuotas(models.Model):
 			self.name = self.journal_id.name + ' - ' + self.bank_id.bic + ' - ' + str(self.cuotas)
 	
 	@api.one
-	@api.constraint('cuotas')
+	@api.constrains('cuotas')
 	def _check_cuotas(self):
 		if self.cuotas > 36:
 			raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
