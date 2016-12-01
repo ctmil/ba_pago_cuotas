@@ -27,14 +27,16 @@ class pos_make_payment(models.TransientModel):
         def change_cuotas_id(self):
                 if self.cuotas_id:
                         if self.cuotas_id.coeficiente:
+                                self.cuotas = self.cuotas_id.cuotas
+				self.monto_recargo = self.amount * self.cuotas_id.coeficiente
+                                self.total_amount = self.amount + self.monto_recargo
 				vals = {
-                                	'cuotas': self.cuotas_id.cuotas,
-	                                'monto_recargo': self.amount * self.cuotas_id.coeficiente,
-                                	'total_amount': self.amount + self.monto_recargo,
+					'cuotas': self.cuotas,
+					'monto_recargo': self.monto_recargo,
+					'total_amount': self.total_amount,
 					}
-				if vals['total_amount'] > 0:
-					vals['amount'] = vals['total_amount']
-					self.write(vals)
+				self.write(vals)
+	
                         else:
                                 self.cuotas = 0
                                 self.monto_recargo = 0
