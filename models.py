@@ -84,9 +84,14 @@ class sale_cuotas(models.Model):
 	def _compute_name(self):
 		if self.journal_id and self.bank_id and self.cuotas:
 			self.name = self.journal_id.name + ' - ' + self.bank_id.bic + ' - ' + str(self.cuotas)
-
 	
-	name = fields.Char('Nombre',readonly=True,compute=_compute_name)
+	@api.one
+	@api.constraint('cuotas')
+	def _check_cuotas(self):
+		if self.cuotas > 36:
+			raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
+	
+	name = fields.Char('Nombre',readonly=True,compute=_compute_name,store=True)
 	bank_id = fields.Many2one('res.bank',string='Banco',required=True)
 	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',('cash','banks'))],required=True)
 	cuotas = fields.Integer(string='Cuotas')
