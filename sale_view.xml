@@ -43,9 +43,6 @@
         </record>
 
 
-        <menuitem id="menu_ba_prices" name="Precios" parent="base.menu_product" sequence="12"
-                action="action_ba_prices" />
-
         <menuitem id="menu_ba_sales_config" name="Blancoamor" 
             parent="base.menu_base_config" sequence="100"/>
 
