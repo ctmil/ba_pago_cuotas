@@ -9,6 +9,7 @@
                 <form string="Monto por Cuotas">
 			<group string="Tipo de pago y producto a agregar">
 		    	    <field name="name" />
+	                    <field name="bank_id"/>
 	                    <field name="journal_id"/>
         	            <field name="product_id"/>
 			</group>
@@ -26,6 +27,7 @@
             <field name="arch" type="xml">
                 <tree string="Monto por Cuotas">
 		    <field name="name" />
+                    <field name="bank_id"/>
                     <field name="journal_id"/>
                     <field name="product_id"/>
                     <field name="cuotas"/>
