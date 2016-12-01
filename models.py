@@ -75,19 +75,18 @@ class sale_cuotas(models.Model):
                 data = []
                 min_qty = 0
                 for sale_cuota in self:
-                        # import pdb;pdb.set_trace()
-                        #if partnerinfo.min_quantity > min_qty:
-                        #       display_value = 'STD BREAKPOINT ' + str(partnerinfo.min_quantity) + ' LEADTIME ' + str(partnerinfo.leadtime)
-                        #       min_qty = partnerinfo.min_quantity
-                        #else:
-                        #       display_value = 'QTA BREAKPOINT ' + str(partnerinfo.min_quantity) + ' LEADTIME ' + str(partnerinfo.leadtime)
 			if sale_cuota.journal_id and sale_cuota.bank_id and sale_cuota.cuotas:
-                                display_value = sale_cuota.journal_id.name + ' - ' + sale_cuota.bank_id.name + ' - ' + str(sale_cuota.cuotas)
+                                display_value = sale_cuota.journal_id.name + ' - ' + sale_cuota.bank_id.bic + ' - ' + str(sale_cuota.cuotas)
                         data.append((sale_cuota.id,display_value))
                 return data
 
+	@api.one
+	def _compute_name(self):
+		if self.journal_id and self.bank_id and self.cuotas:
+			self.name = self.journal_id.name + ' - ' + self.bank_id.bic + ' - ' + str(self.cuotas)
+
 	
-	name = fields.Char('Nombre',readonly=True)
+	name = fields.Char('Nombre',readonly=True,compute=_compute_name)
 	bank_id = fields.Many2one('res.bank',string='Banco',required=True)
 	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',('cash','banks'))],required=True)
 	cuotas = fields.Integer(string='Cuotas')
