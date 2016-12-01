@@ -73,13 +73,16 @@
             <field name="inherit_id" ref="point_of_sale.view_pos_payment"/>
             <field name="arch" type="xml">
 		<field name="journal_id" position="after">
-			<field name="cuotas_id" 
-				domain="[('journal_id','=',journal_id)]"/>
+			<!-- field name="cuotas_id" 
+				domain="[('journal_id','=',journal_id)]"/ -->
+			<field name="cuotas_id" />
 		</field>
                 <field name="amount" position="after">
                         <field name="total_amount" readonly="1"/>
                         <field name="monto_recargo" readonly="1"/>
                         <field name="cuotas" readonly="1"/>
+			<field name="nro_cupon" />
+			<field name="nro_tarjeta" />
                 </field>
             </field>
         </record>

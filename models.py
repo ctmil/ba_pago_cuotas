@@ -12,9 +12,19 @@ from datetime import datetime
 #Get the logger
 _logger = logging.getLogger(__name__)
 
+class account_bank_statement_line(models.Model):
+	_inherit = 'account.bank.statement.line'
+
+	cuotas_id = fields.Many2one('sale.cuotas',string='Plan de cuotas')	
+	nro_cupon = fields.Char('Nro cupon')
+	nro_tarjeta = fields.Char('Nro tarjeta')	
+
+
 class pos_make_payment(models.TransientModel):
         _inherit = 'pos.make.payment'
 
+	nro_cupon = fields.Char('Nro cupon')
+	nro_tarjeta = fields.Char('Nro tarjeta')	
         order_amount = fields.Float('Monto del pedido')
         cuotas = fields.Integer('Cuotas')
         monto_recargo = fields.Float('Monto Recargo')
