@@ -38,7 +38,7 @@ class pos_make_payment(models.TransientModel):
         total_amount = fields.Float('Monto total con recargos')
         journal_id = fields.Many2one('account.journal',string='Payment Mode',required=True,domain=[('journal_user','=',True)])
 	cuotas_id = fields.Many2one('sale.cuotas',string='Plan de cuotas')	
-
+	is_credit_card = fields.Boolean(string='Es tarjeta de crédito',related='journal_id.is_credit_card')
 	
         @api.onchange('cuotas_id')
         def change_cuotas_id(self):

@@ -73,6 +73,7 @@
             <field name="inherit_id" ref="point_of_sale.view_pos_payment"/>
             <field name="arch" type="xml">
 		<field name="journal_id" position="after">
+			<field name="is_credit_card" />
 			<field name="cuotas_id" 
 				domain="[('journal_id','=',journal_id)]"/>
 		</field>
