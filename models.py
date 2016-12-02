@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from openerp import models, fields, api, _
 from openerp.osv import osv
 from openerp.exceptions import except_orm, ValidationError
@@ -11,6 +13,11 @@ from datetime import datetime
 
 #Get the logger
 _logger = logging.getLogger(__name__)
+
+class account_journal(models.Model):
+	_inherit = 'account.journal'
+
+	is_credit_card = fields.Boolean(string='Es tarjeta de crédito')
 
 class account_bank_statement_line(models.Model):
 	_inherit = 'account.bank.statement.line'
