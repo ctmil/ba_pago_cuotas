@@ -79,7 +79,8 @@
 				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
 		</field>
                 <field name="amount" position="after" >
-			<group col="6" colspan="4" string="Información Tarjeta de Crédito">
+			<group col="6" colspan="4" string="Información Tarjeta de Crédito"
+				attrs="{'invisible':[('is_credit_card', '=', False)]}">
 	                        <field name="total_amount" readonly="1"
 					attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
                 	        <field name="monto_recargo" readonly="1"
@@ -102,6 +103,18 @@
             <field name="arch" type="xml">
 		<field name="type" position="after">
 			<field name="is_credit_card" />
+		</field>
+            </field>
+        </record>
+
+        <record id="view_pos_order_form_pdv" model="ir.ui.view">
+            <field name="name">pos.order.form.pdv</field>
+            <field name="model">pos.order</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
+            <field name="arch" type="xml">
+		<field name="statement_id" position="after">
+			<field name="nro_cupon" />
+			<field name="nro_tarjeta" />
 		</field>
             </field>
         </record>
