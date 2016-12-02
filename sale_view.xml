@@ -73,16 +73,22 @@
             <field name="inherit_id" ref="point_of_sale.view_pos_payment"/>
             <field name="arch" type="xml">
 		<field name="journal_id" position="after">
-			<field name="is_credit_card" />
+			<field name="is_credit_card" invisible="1"/>
 			<field name="cuotas_id" 
-				domain="[('journal_id','=',journal_id)]"/>
+				domain="[('journal_id','=',journal_id)]"
+				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
 		</field>
                 <field name="amount" position="after">
-                        <field name="total_amount" readonly="1"/>
-                        <field name="monto_recargo" readonly="1"/>
-                        <field name="cuotas" readonly="1"/>
-			<field name="nro_cupon" />
-			<field name="nro_tarjeta" />
+                        <field name="total_amount" readonly="1"
+				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
+                        <field name="monto_recargo" readonly="1"
+				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
+                        <field name="cuotas" readonly="1"
+				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
+			<field name="nro_cupon" 
+				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
+			<field name="nro_tarjeta" 
+				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
                 </field>
             </field>
         </record>
