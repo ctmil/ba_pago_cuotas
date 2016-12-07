@@ -28,6 +28,14 @@ class pos_make_payment(osv.osv_memory):
 	        amount = order.amount_total - order.amount_paid
         	data = self.read(cr, uid, ids, context=context)[0]
 		cuotas = None
+		is_credit_card = data.get('is_credit_card',False)
+		if is_credit_card:
+			cuotas_id = data.get('cuotas_id',False)
+			nro_tarjeta = data.get('nro_tarjeta',False)
+			nro_cupon = data.get('nro_cupon',False)
+			if not cuotas_id or not nro_cupon or not nro_tarjeta:
+				raise osv.except_osv(_('Error!'), _('Debe ingresar informacion del cupon/tarjeta!'))
+
 		if data['cuotas_id']:
 			cuotas = self.pool.get('sale.cuotas').browse(cr,uid,data['cuotas_id'][0])
 			if cuotas:
