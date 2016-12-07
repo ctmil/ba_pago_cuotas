@@ -12,6 +12,24 @@ import openerp.addons.decimal_precision as dp
 import openerp.addons.product.product
 import math
 
+class pos_order(osv.osv):
+	_inherit = 'pos.order'
+
+	def test_paid(self, cr, uid, ids, context=None):
+        	"""A Point of Sale is paid when the sum
+	        @return: True
+        	"""
+
+		for order in self.browse(cr, uid, ids, context=context):
+			if order.lines and not order.amount_total:
+				return True
+			if (not order.lines) or (not order.statement_ids) or \
+				(abs(order.amount_total-order.amount_paid) > 0.1):
+				return False
+		return True
+
+
+
 class pos_make_payment(osv.osv_memory):
 	_inherit = 'pos.make.payment'
 
@@ -68,11 +86,11 @@ class pos_make_payment(osv.osv_memory):
 					('journal_id','=',data['journal_id'][0])],order='id desc',limit=1)
 			if statement_id:
 				statement = self.pool.get('account.bank.statement.line').browse(cr,uid,statement_id)
-				if math.floor(statement.amount) == math.floor(total_amount):
-					vals = {
-						'nro_cupon': data.get('nro_cupon','N/A'),				
-						'nro_tarjeta': data.get('nro_tarjeta','N/A'),				
-						}
-					return_id = self.pool.get('account.bank.statement.line').write(cr,uid,statement_id,vals)
+				#if math.floor(statement.amount) == math.floor(total_amount):
+				vals = {
+					'nro_cupon': data.get('nro_cupon','N/A'),				
+					'nro_tarjeta': data.get('nro_tarjeta','N/A'),				
+					}
+				return_id = self.pool.get('account.bank.statement.line').write(cr,uid,statement_id,vals)
 		return {'type': 'ir.actions.act_window_close'}
 
