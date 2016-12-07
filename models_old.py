@@ -52,11 +52,13 @@ class pos_make_payment(osv.osv_memory):
 					}
 				line_id = self.pool.get('pos.order.line').create(cr,uid,vals_line)
 				if cuotas.coeficiente > 0:
-					import pdb;pdb.set_trace()
+					surcharge_amount = amount * cuotas.coeficiente
+					tax_surcharge = surcharge_amount * cuotas.product_id.taxes_id.amount
+					total_amount = amount * ( 1 + cuotas.coeficiente ) + tax_surcharge
 					vals = {
-						'amount': amount * (1+cuotas.coeficiente) * tax_amount
+						'amount': amount * (1+cuotas.coeficiente) + tax_surcharge
 						}
-					data['amount'] = amount * (1+cuotas.coeficiente) * tax_amount
+					data['amount'] = amount * (1+cuotas.coeficiente) + tax_surcharge
 					return_id = self.pool.get('pos.make.payment').write(cr,uid,ids,vals)
 		res = super(pos_make_payment,self).check(cr,uid,ids,context)
 		if cuotas:
