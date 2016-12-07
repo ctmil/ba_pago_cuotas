@@ -44,8 +44,12 @@ class pos_make_payment(models.TransientModel):
         def change_cuotas_id(self):
                 if self.cuotas_id:
                         if self.cuotas_id.coeficiente:
+				if self.cuotas_id.product_id.taxes_id:
+					if len(self.cuotas_id.product_id.taxes_id) > 1:
+						raise ValidationError('El plan de cuotas tiene multiples impuestos configurados')
+					tax_amount = self.cuotas_id.product_id.taxes_id.amount
                                 self.cuotas = self.cuotas_id.cuotas
-				self.monto_recargo = self.amount * self.cuotas_id.coeficiente
+				self.monto_recargo = self.amount * self.cuotas_id.coeficiente * ( 1 + tax_amount)
                                 self.total_amount = self.amount + self.monto_recargo
 				vals = {
 					'cuotas': self.cuotas,
