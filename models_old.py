@@ -92,5 +92,6 @@ class pos_make_payment(osv.osv_memory):
 					'nro_tarjeta': data.get('nro_tarjeta','N/A'),				
 					}
 				return_id = self.pool.get('account.bank.statement.line').write(cr,uid,statement_id,vals)
+		self.pool.get('pos.order').create_from_ui_v2(cr,uid,[order.id])
 		return {'type': 'ir.actions.act_window_close'}
 
