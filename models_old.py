@@ -99,6 +99,7 @@ class pos_make_payment(osv.osv_memory):
 				order.action_invoice()
 			else:
 				# Creates refund
+				self.pool.get('pos.order').create_refund_from_ui_v2(cr,uid,[order.id])
 				order.action_invoice()
 		return {'type': 'ir.actions.act_window_close'}
 
