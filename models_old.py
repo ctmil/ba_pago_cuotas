@@ -93,7 +93,12 @@ class pos_make_payment(osv.osv_memory):
 					}
 				return_id = self.pool.get('account.bank.statement.line').write(cr,uid,statement_id,vals)
 		if order.test_paid():
-			self.pool.get('pos.order').create_from_ui_v2(cr,uid,[order.id])
-			order.action_invoice()
+			if order.sale_journal.type == 'sale':
+				# Creates invoice
+				self.pool.get('pos.order').create_from_ui_v2(cr,uid,[order.id])
+				order.action_invoice()
+			else:
+				# Creates refund
+				order.action_invoice()
 		return {'type': 'ir.actions.act_window_close'}
 
