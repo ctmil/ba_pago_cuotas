@@ -43,6 +43,8 @@ class pos_make_payment(osv.osv_memory):
         	active_id = context and context.get('active_id', False)
 
 	        order = order_obj.browse(cr, uid, active_id, context=context)
+		if not order.partner_id:
+			raise osv.except_osv(_('Error!'), _('Debe ingresar el cliente!'))
 	        amount = order.amount_total - order.amount_paid
         	data = self.read(cr, uid, ids, context=context)[0]
 		cuotas = None
