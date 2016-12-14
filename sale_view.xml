@@ -119,6 +119,21 @@
             </field>
         </record>
 
+        <record id="view_pos_config_form_pdv" model="ir.ui.view">
+            <field name="name">pos.config.form.pdv</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_config_form"/>
+            <field name="arch" type="xml">
+		<field name="journal_ids" position="after">
+			<field name="sale_journals">
+				<tree string='Diarios de Venta' editable="bottom">
+					<field name="responsability_id" />
+					<field name="journal_id" />
+				</tree>
+			</field>
+		</field>
+            </field>
+        </record>
 
 
     </data>
