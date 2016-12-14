@@ -39,7 +39,7 @@ class pos_config(models.Model):
 	_inherit = 'pos.config'
 
 	sale_journals = fields.One2many(comodel_name='pos.config.journal',inverse_name='config_id')
-
+	point_of_sale = fields.Integer(string='Punto de Venta',required=True)
 
 class pos_make_payment(models.TransientModel):
         _inherit = 'pos.make.payment'

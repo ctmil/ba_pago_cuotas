@@ -124,15 +124,18 @@
             <field name="model">pos.config</field>
             <field name="inherit_id" ref="point_of_sale.view_pos_config_form"/>
             <field name="arch" type="xml">
+		<field name="sequence_id" position="after">
+			<field name="point_of_sale" />
+		</field>
 		<field name="journal_ids" position="after">
-			<field name="sale_journals">
-				<group string="Diarios de Venta">
+			<group string="Diarios de Venta">
+				<field name="sale_journals">
 					<tree string='Diarios de Venta' editable="bottom">
 						<field name="responsability_id" />
-						<field name="journal_id" />
+						<field name="journal_id" domain="[('type','in',['sale','sale_refund']),('point_of_sale','=',parent.point_of_sale)]"/>
 					</tree>
-				</group>
-			</field>
+				</field>
+			</group>
 		</field>
             </field>
         </record>
