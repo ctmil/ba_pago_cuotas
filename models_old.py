@@ -104,7 +104,9 @@ class pos_make_payment(osv.osv_memory):
 					journal_ids = self.pool.get('pos.config.journal').search(cr,uid,[('config_id','=',order.session_id.config_id.id),\
 							('journal_type','=','sale'),('responsability_id','=',order.partner_id.responsability_id.id)])
 					if journal_ids:
-						self.pool.get('account.invoice').write(cr,uid,order.invoice_id.id,{'journal_id': journal_ids[0]})
+						journal_id = self.pool.get('pos.config.journal').browse(cr,uid,journal_ids[0])
+						journal = journal_id.journal_id.id
+						self.pool.get('account.invoice').write(cr,uid,order.invoice_id.id,{'journal_id': journal})
 			else:
 				# Creates refund
 				self.pool.get('pos.order').create_refund_from_ui_v2(cr,uid,[order.id])
