@@ -33,7 +33,7 @@ class pos_config_journal(models.Model):
 	config_id = fields.Many2one('pos.config',string='Sesión',required=True)	
 	responsability_id = fields.Many2one('afip.responsability',string='Responsabilidad AFIP',required=True)
 	journal_id = fields.Many2one('account.journal',string='Diario')
-	journal_type = fields.Char(string='Tipo de journal',related='journal_id.type')
+	journal_type = fields.Selection(selection=[('sale', 'Sale'),('sale_refund','Sale Refund'), ('purchase', 'Purchase'), ('purchase_refund','Purchase Refund'), ('cash', 'Cash'), ('bank', 'Bank and Checks'), ('general', 'General'), ('situation', 'Opening/Closing Situation')],related='journal_id.type')
 
 class pos_config(models.Model):
 	_inherit = 'pos.config'
