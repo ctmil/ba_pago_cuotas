@@ -99,6 +99,13 @@ class pos_make_payment(osv.osv_memory):
 				# Creates invoice
 				self.pool.get('pos.order').create_from_ui_v2(cr,uid,[order.id])
 				order.action_invoice()
+				if order.invoice_id:
+					invoice = order.invoice_id
+					if order.partner_id.responsability_id.code == 'RI':
+						journal = 12
+					else:
+						journal = 13
+					self.pool.get('account.invoice').write(cr,uid,order.invoice_id.id,{'journal_id': journal})
 			else:
 				# Creates refund
 				self.pool.get('pos.order').create_refund_from_ui_v2(cr,uid,[order.id])
