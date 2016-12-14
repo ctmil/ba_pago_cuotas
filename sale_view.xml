@@ -126,10 +126,12 @@
             <field name="arch" type="xml">
 		<field name="journal_ids" position="after">
 			<field name="sale_journals">
-				<tree string='Diarios de Venta' editable="bottom">
-					<field name="responsability_id" />
-					<field name="journal_id" />
-				</tree>
+				<group string="Diarios de Venta">
+					<tree string='Diarios de Venta' editable="bottom">
+						<field name="responsability_id" />
+						<field name="journal_id" />
+					</tree>
+				</group>
 			</field>
 		</field>
             </field>
