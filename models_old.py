@@ -101,7 +101,7 @@ class pos_make_payment(osv.osv_memory):
 				order.action_invoice()
 				if order.invoice_id:
 					invoice = order.invoice_id
-					journal_ids = self.pool.get('pos.config.journal').search([('config_id','=',order.session_id.config_id.id),\
+					journal_ids = self.pool.get('pos.config.journal').search(cr,uid,[('config_id','=',order.session_id.config_id.id),\
 							('journal_type','=','sale'),('responsability_id','=',order.partner_id.responsability_id.id)])
 					if journal_ids:
 						self.pool.get('account.invoice').write(cr,uid,order.invoice_id.id,{'journal_id': journal_ids[0].id})
