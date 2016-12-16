@@ -18,7 +18,12 @@ class pos_session(osv.osv):
 
 	def _confirm_orders(self, cr, uid, ids, context=None):
 		res = super(pos_session, self)._confirm_orders(cr, uid, ids, context=context)
-		import pdb;pdb.set_trace()
+		for session_id in ids:
+			session = self.pool.get('pos.session').browse(cr,uid,session_id)
+			if session.journal_id:
+				account_move_ids = self.pool.get('account.move').search([('state','=','draft'),('journal_id','=',session.journal_id.id)])
+				if account_move_ids:
+					return_id = self.pool.get('account.move').unlink(cr,uid,account_move_ids)
 		return res
 
 pos_session()
