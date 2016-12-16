@@ -21,7 +21,7 @@ class pos_session(osv.osv):
 		for session_id in ids:
 			session = self.pool.get('pos.session').browse(cr,uid,session_id)
 			if session.config_id.journal_id:
-				account_move_ids = self.pool.get('account.move').search([('state','=','draft'),('journal_id','=',session.config_id.journal_id.id)])
+				account_move_ids = self.pool.get('account.move').search(cr,uid,[('state','=','draft'),('journal_id','=',session.config_id.journal_id.id)])
 				if account_move_ids:
 					return_id = self.pool.get('account.move').unlink(cr,uid,account_move_ids)
 		return res
