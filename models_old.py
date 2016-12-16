@@ -12,6 +12,17 @@ import openerp.addons.decimal_precision as dp
 import openerp.addons.product.product
 import math
 
+
+class pos_session(osv.osv):
+	_inherit = 'pos.session'
+
+	def _confirm_orders(self, cr, uid, ids, context=None):
+		res = super(pos_session, self)._confirm_orders(cr, uid, ids, context=context)
+		import pdb;pdb.set_trace()
+		return res
+
+pos_session(osv.osv)
+
 class pos_order(osv.osv):
 	_inherit = 'pos.order'
 
