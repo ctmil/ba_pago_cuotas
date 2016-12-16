@@ -116,6 +116,9 @@
 			<field name="nro_cupon" />
 			<field name="nro_tarjeta" />
 		</field>
+		<field name="invoice_id" position="after">
+			<field name="nro_factura" />
+		</field>
             </field>
         </record>
 

@@ -147,3 +147,15 @@ class sale_cuotas(models.Model):
 	product_id = fields.Many2one('product.product',string='Producto')
 	monto = fields.Float(string='Monto')
 	coeficiente = fields.Float(string='Coeficiente',help='Porcentaje de coeficiente, debe ser un valor entre 0 y 5')
+
+class pos_order(models.Model):
+	_inherit = 'pos.order'
+
+	@api.one
+	def _compute_nro_factura(self):
+		return_value = 'N/A'
+		if self.invoice_id:
+			return_value = self.invoice_id.number
+		self.nro_factura = return_value
+
+	nro_factura = fields.Char(string='Nro Factura',compute=_compute_nro_factura)
