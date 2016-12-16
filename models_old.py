@@ -21,7 +21,7 @@ class pos_session(osv.osv):
 		import pdb;pdb.set_trace()
 		return res
 
-pos_session(osv.osv)
+pos_session()
 
 class pos_order(osv.osv):
 	_inherit = 'pos.order'
