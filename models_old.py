@@ -28,6 +28,7 @@ class pos_session(osv.osv):
 					old_statement = self.pool.get('account.bank.statement').\
 						search(cr,uid,[('pos_session_id','=',old_session[0]),('journal_id','=',statement.journal_id.id)])
 					if old_statement:
+						old_statement = self.pool.get('account.bank.statement').browse(cr,uid,old_statement[0])
 						vals = {
 							'balance_start': old_statement.balance_end_real,
 							}							
