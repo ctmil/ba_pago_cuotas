@@ -16,6 +16,24 @@ import math
 class pos_session(osv.osv):
 	_inherit = 'pos.session'
 
+
+	def create(self, cr, uid, values, context=None):
+		session_id = super(pos_session, self).create(cr, uid, values, context=context)
+		session = self.pool.get('pos.session').browse(cr,uid,session_id)
+		old_session = self.pool.get('pos.session').search(cr,uid,[('config_id','=',session.config_id.id),
+					('state','=','closed')],order='id desc',limit=1)
+		if old_session:
+			if session.statement_ids:
+				for statement in session.statement_ids:
+					old_statement = self.pool.get('account.bank.statement').\
+						search(cr,uid,[('session_id','=',old_session.id),('journal_id','=',statement.journal_id.id)])
+					if old_statement:
+						vals = {
+							'balance_start': old_statement.balance_end_real,
+							}							
+						return_id = self.pool.get('account.bank.statement').write(cr,uid,statement.id,vals)
+		return session_id
+
 	def _confirm_orders(self, cr, uid, ids, context=None):
 		res = super(pos_session, self)._confirm_orders(cr, uid, ids, context=context)
 		for session_id in ids:
