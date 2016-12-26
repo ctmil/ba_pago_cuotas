@@ -35,9 +35,9 @@ class pos_config_journal(models.Model):
 		return_value = 0
 		if self.journal_type == 'sale':	
 			if self.journal_id.journal_class_id.document_class_id.name == 'A':
-				return_value = self.config_id.journal_id.last_a_sale_document_completed
+				return_value = self.config_id.journal_id.last_a_sale_document_completed + 1
 			else:
-				return_value = self.config_id.journal_id.last_b_sale_document_completed
+				return_value = self.config_id.journal_id.last_b_sale_document_completed + 1
 		self.next_printer_number = return_value
 
 	config_id = fields.Many2one('pos.config',string='Sesión',required=True)	
