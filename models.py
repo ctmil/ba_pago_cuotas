@@ -44,7 +44,7 @@ class pos_config_journal(models.Model):
 	def sync_numbers(self):
 		if self.next_sequence_number != self.next_printer_number:
 			vals = {
-				'number_next_actual': self.next_printer_number + 1			
+				'number_next_actual': self.next_printer_number 
 				}
 			sequence = self.journal_id.sequence_id
 			sequence.write(vals)
