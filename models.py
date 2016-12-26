@@ -30,10 +30,23 @@ class pos_config_journal(models.Model):
 	_name = 'pos.config.journal'
 	_description = 'Describe la relacion de medio de pago, journal, sesion'
 
+	@api.one
+	def _compute_next_printer_number(self):
+		return_value = 0
+		if self.journal_type == 'sale':	
+			if self.journal_id.journal_class_id.document_class_id.name == 'A':
+				return_value = self.config_id.journal_id.last_a_sale_document_completed
+			else:
+				return_value = self.config_id.journal_id.last_b_sale_document_completed
+		self.next_printer_number = return_value
+
 	config_id = fields.Many2one('pos.config',string='Sesión',required=True)	
 	responsability_id = fields.Many2one('afip.responsability',string='Responsabilidad AFIP',required=True)
 	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',['sale','sale_refund'])])
 	journal_type = fields.Selection(selection=[('sale', 'Sale'),('sale_refund','Sale Refund'), ('purchase', 'Purchase'), ('purchase_refund','Purchase Refund'), ('cash', 'Cash'), ('bank', 'Bank and Checks'), ('general', 'General'), ('situation', 'Opening/Closing Situation')],related='journal_id.type')
+	next_sequence_number = fields.Integer(string='Sig.Nro.Secuencia',related='journal_id.sequence_id.number_next_actual')
+	next_printer_number = fields.Integer(string='Sig.Nro.Impresora',compute=_compute_next_printer_number)
+
 
 class pos_config(models.Model):
 	_inherit = 'pos.config'
@@ -123,6 +136,7 @@ class sale_cuotas(models.Model):
 	@api.one
 	@api.constrains('cuotas')
 	def _check_cuotas(self):
+		import pdb;pdb.set_trace()
 		if self.cuotas > 36 or self.cuotas < 1:
 			raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
 
