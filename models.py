@@ -40,6 +40,16 @@ class pos_config_journal(models.Model):
 				return_value = self.config_id.journal_id.last_b_sale_document_completed + 1
 		self.next_printer_number = return_value
 
+	@api.one
+	def sync_numbers(self):
+		if self.next_sequence_number != self.next_printer_number:
+			vals = {
+				'number_next_actual': self.next_printer_number + 1			
+				}
+			sequence = self.journal_id.sequence_id
+			sequence.write(vals)
+	
+
 	config_id = fields.Many2one('pos.config',string='Sesión',required=True)	
 	responsability_id = fields.Many2one('afip.responsability',string='Responsabilidad AFIP',required=True)
 	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',['sale','sale_refund'])])
