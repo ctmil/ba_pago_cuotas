@@ -16,6 +16,31 @@ import math
 class pos_session(osv.osv):
 	_inherit = 'pos.session'
 
+	def wkf_action_close(self, cr, uid, ids, context=None):
+        	r = super(pos_session, self).wkf_action_close(cr, uid, ids, context=context)
+		import pdb;pdb.set_trace()
+		for session_id in ids:
+			session = self.pool.get('pos.session').browse(cr,uid,session_id)
+			for order_id in session.order_ids:
+				order = self.pool.get('pos.order').browse(cr,uid,order_id)
+				if order.invoice_id:
+					if order.invoice_id.move_id:
+						move_line_invoice = None
+						for move_line in order.invoice_id.line_id:
+							if move_line.debit > 0:							
+								move_line_invoice = move_line.id
+					if order.statement_ids:
+						for statement in order.statement_ids:
+							if statement.journal_entry_id:
+								for move_line in statement.journal_entry_id.line_id:
+									if move_line_credit > 0:
+										move_line_statement = move_line.id
+										rec_ids = [move_line_invoice,move_line_statement]	
+										return_id = self.pool.get('account.move.line').\
+											partial_reconcile(cr,uid,rec_ids)
+								
+        return r
+
 
 	def create(self, cr, uid, values, context=None):
 		session_id = super(pos_session, self).create(cr, uid, values, context=context)
