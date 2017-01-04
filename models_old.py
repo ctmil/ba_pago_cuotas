@@ -39,7 +39,7 @@ class pos_session(osv.osv):
 										return_id = self.pool.get('account.move.line').\
 											partial_reconcile(cr,uid,rec_ids)
 								
-        return r
+	        return r
 
 
 	def create(self, cr, uid, values, context=None):
