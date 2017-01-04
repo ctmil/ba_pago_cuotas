@@ -138,6 +138,7 @@
 						<field name="journal_id" domain="[('type','in',['sale','sale_refund']),('point_of_sale','=',parent.point_of_sale)]"/>
 						<field name="next_sequence_number" />
 						<field name="next_printer_number" />
+						<button name="sync_numbers" string="Sync" type="object" />
 					</tree>
 				</field>
 			</group>
