@@ -21,8 +21,7 @@ class pos_session(osv.osv):
 		import pdb;pdb.set_trace()
 		for session_id in ids:
 			session = self.pool.get('pos.session').browse(cr,uid,session_id)
-			for order_id in session.order_ids:
-				order = self.pool.get('pos.order').browse(cr,uid,order_id)
+			for order in session.order_ids:
 				if order.invoice_id:
 					if order.invoice_id.move_id:
 						move_line_invoice = None
