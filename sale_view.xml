@@ -146,6 +146,19 @@
             </field>
         </record>
 
+        <record id="view_pos_session_pdv" model="ir.ui.view">
+            <field name="name">pos.session.form.pdv</field>
+            <field name="model">pos.session</field>
+            <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
+            <field name="arch" type="xml">
+                  <button class="oe_stat_button" name="%(point_of_sale.action_pos_box_in)d" position="attributes">
+			<attribute name="invisible">1</attribute>
+		  </button>
+                  <button class="oe_stat_button" name="%(point_of_sale.action_pos_box_out)d" position="attributes">
+			<attribute name="invisible">1</attribute>
+		  </button>
+            </field>
+        </record>
 
     </data>
 </openerp>
