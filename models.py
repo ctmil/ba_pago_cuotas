@@ -63,6 +63,8 @@ class pos_config(models.Model):
 
 	sale_journals = fields.One2many(comodel_name='pos.config.journal',inverse_name='config_id')
 	point_of_sale = fields.Integer(string='Punto de Venta',required=True)
+	bank_account = fields.Many2one('account.account',string='Cuenta Contable Bancos')
+	cash_journal = fields.Many2one('account.journal',string='Metodo de Pago Caja',domain=[('type','=','cash')])
 
 class pos_make_payment(models.TransientModel):
         _inherit = 'pos.make.payment'

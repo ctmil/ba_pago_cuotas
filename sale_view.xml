@@ -129,6 +129,8 @@
             <field name="arch" type="xml">
 		<field name="sequence_id" position="after">
 			<field name="point_of_sale" />
+			<field name="bank_account" />
+			<field name="cash_journal" />
 		</field>
 		<field name="journal_ids" position="after">
 			<group string="Diarios de Venta">
