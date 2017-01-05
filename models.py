@@ -206,6 +206,7 @@ class pos_session(models.Model):
                                 "view_mode": "form",
                                 #"view_id": "product.product_supplierinfo_form_view",
                                 "res_id": wizard_id,
+				"target": "new",
                                 "nodestroy": True,
                                 }
                         return res
