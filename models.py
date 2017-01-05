@@ -9,7 +9,7 @@ import openerp.addons.decimal_precision as dp
 import logging
 import datetime
 from openerp.fields import Date as newdate
-from datetime import datetime
+from datetime import datetime,date
 
 #Get the logger
 _logger = logging.getLogger(__name__)
@@ -183,3 +183,30 @@ class pos_order(models.Model):
 		self.nro_factura = return_value
 
 	nro_factura = fields.Char(string='Nro Factura',compute=_compute_nro_factura)
+
+class pos_session(models.Model):
+	_inherit = 'pos.session'
+
+	@api.multi
+	def bank_deposit(self):
+		user_id = self.env.context['uid']
+		vals = {
+			'user_id': user_id,
+			'session_id': self.id,
+			'date': str(date.today())
+			}
+		wizard = self.env['bank.deposit.pdv'].create(vals)	
+		if wizard:
+			wizard_id = wizard.id
+                        res = {
+                                "name": "bank.deposit."+str(wizard_id.id),
+                                "type": "ir.actions.act_window",
+                                "res_model": "bank.deposit.pdv",
+                                "view_type": "form",
+                                "view_mode": "form",
+                                #"view_id": "product.product_supplierinfo_form_view",
+                                "res_id": wizard_id.id,
+                                "nodestroy": True,
+                                }
+                        return res
+

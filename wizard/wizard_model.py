@@ -9,6 +9,17 @@ import ast
 #Get the logger
 _logger = logging.getLogger(__name__)
 
+class bank_deposit_pdv(models.TransientModel):
+	_name = 'bank.deposit.pdv'
+
+	name = fields.Char('Nombre')
+	user_id = fields.Many2one('res.users')
+	session_id = fields.Many2one('pos.session')
+	date = fields.Date('Fecha')
+	amount = fields.Float('Monto')
+	#nro_deposito = fields.Char('Nro. Deposito')
+
+
 class add_sale_order_cuotas(models.TransientModel):
 	_name = 'add.sale.order.cuotas'
 

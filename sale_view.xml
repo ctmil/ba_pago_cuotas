@@ -157,6 +157,10 @@
                   <button class="oe_stat_button" name="%(point_of_sale.action_pos_box_out)d" position="attributes">
 			<attribute name="invisible">1</attribute>
 		  </button>
+		  <button name="close" position="after">
+			<button name="bank_deposit" string="Depositar en Banco" 
+				type="object" states="opened"/>
+		  </button>
             </field>
         </record>
 

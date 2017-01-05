@@ -1,6 +1,23 @@
 <openerp>
 	<data>
 
+		<record id="ba_bank_deposit_pdv" model="ir.ui.view">
+			<field name="name">Depositar efectivo</field>
+			<field name="model">bank.deposit.pdv</field>
+			<field name="arch" type="xml">
+				<form string="Depositar Efectivo">
+					<group string="Deposito">
+						<field name="name" />
+						<field name="date" />
+						<field name="user_id" />
+						<field name="session_id" />
+						<field name="amount" />
+					</group>
+					<button name="create_deposit" type="object" string="Actualizar" /> 
+				</form>
+			</field>
+		</record>
+
 		<record id="ba_product_update_prices" model="ir.ui.view">
 			<field name="name">Actualizar Precios/Costos</field>
 			<field name="model">product.update.prices</field>
