@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from openerp import models, fields, api, _
 from openerp.exceptions import except_orm, ValidationError
 from openerp.osv import osv
@@ -5,12 +7,43 @@ import urllib2, httplib, urlparse, gzip, requests, json
 from StringIO import StringIO
 import openerp.addons.decimal_precision as dp
 import logging
+from datetime import date
 import ast
 #Get the logger
 _logger = logging.getLogger(__name__)
 
 class bank_deposit_pdv(models.TransientModel):
 	_name = 'bank.deposit.pdv'
+
+	@api.multi
+	def create_deposit(self):
+		session = self.session_id
+		vals_move = {
+			'date': str(date.today()),
+			'journal_id': session.config_id.journal_id.id,
+			'ref': 'Depósito ' + session.name,
+			}
+		move_id = self.env['account.move'].create(vals_move)
+		if move_id:
+			debit_account_id = session.config_id.bank_account.id
+			credit_account_id = session.config_id.default_debit_account_id.id
+			vals_debit = {
+				'account_id': debit_account_id,
+				'name': 'Depósito ' + session.name,
+				'partner_id': self.user_id.partner_id.id,
+				'debit': self.amount,
+				'move_id': move_id.id
+				}
+			debit_line_id = self.env['account.move.line'].create(vals_debit)
+			vals_credit = {
+				'account_id': credit_account_id,
+				'name': 'Depósito ' + session.name,
+				'partner_id': self.user_id.partner_id.id,
+				'credit': self.amount,
+				'move_id': move_id.id
+				}
+			debit_line_id = self.env['account.move.line'].create(vals_debit)
+			
 
 	name = fields.Char('Nombre')
 	user_id = fields.Many2one('res.users')
