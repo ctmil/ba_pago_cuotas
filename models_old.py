@@ -44,7 +44,7 @@ class pos_session(osv.osv):
 
 
 	def create(self, cr, uid, values, context=None):
-		session_id = super(pos_session, self).create(cr, uid, values, context=contmove_id.ext)
+		session_id = super(pos_session, self).create(cr, uid, values, context=context)
 		session = self.pool.get('pos.session').browse(cr,uid,session_id)
 		old_session = self.pool.get('pos.session').search(cr,uid,[('config_id','=',session.config_id.id),
 					('state','=','closed')],order='id desc',limit=1)
