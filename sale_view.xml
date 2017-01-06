@@ -163,7 +163,20 @@
 			<button name="bank_deposit" string="Depositar en Banco" 
 				type="object" states="opened"/>
 		  </button>
-            </field>
+		  <field name="deposit_ids" position="after">
+			   <separator string="Depositos bancarios" />
+        	           <field name="statement_ids" >
+                	            <tree string="Depositos Bancarios" editable="bottom" create="false" delete="false"> 
+                        	        <field name="name" readonly="1"/>
+	                                <field name="date" readonly="1"/>
+        	                        <field name="user_id" readonly="1"/>
+                        	        <field name="move_id" readonly="1"/>
+	                                <field name="amount" readonly="1"/>
+	                                <field name="nro_deposito"/>
+                        	    </tree>
+	                   </field>
+		  </field>
+	    </field>
         </record>
 
     </data>

@@ -13,7 +13,7 @@
 						<field name="session_id" />
 						<field name="amount" />
 					</group>
-					<button name="create_deposit" type="object" string="Actualizar" /> 
+					<button name="create_deposit" type="object" string="Depositar" /> 
 				</form>
 			</field>
 		</record>

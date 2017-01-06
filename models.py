@@ -213,3 +213,15 @@ class pos_session(models.Model):
                                 }
                         return res
 
+	deposit_ids = fields.One2many(comodel_name='pos.session.deposit',inverse_name='session_id')
+
+class pos_session_deposit(models.Model):
+	_name = 'pos.session.deposit'
+
+	name = fields.Char('Nombre')
+	move_id = fields.Many2one('account.move',string='Mov Contable')
+	date = fields.Date('Fecha')
+	user_id = fields.Many2one('res.users',string='Usuario')
+	amount = fields.Float('Monto')
+	nro_deposito = fields.Char('Nro Deposito')
+	session_id = fields.Many2one('pos.session')
