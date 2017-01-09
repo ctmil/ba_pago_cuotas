@@ -18,6 +18,11 @@ class bank_deposit_pdv(models.TransientModel):
 	@api.multi
 	def create_deposit(self):
 		session = self.session_id
+		credit_account_id = session.config_id.cash_journal.default_debit_account_id.id
+		credit_account = session.config_id.cash_journal.default_debit_account_id
+		if self.amount > credit_account.balance:
+			raise ValidationError('El monto ingresado no puede superar el saldo de la caja')
+				
 		vals_move = {
 			'date': str(date.today()),
 			'journal_id': session.config_id.journal_id.id,
@@ -26,7 +31,6 @@ class bank_deposit_pdv(models.TransientModel):
 		move_id = self.env['account.move'].create(vals_move)
 		if move_id:
 			debit_account_id = session.config_id.bank_account.id
-			credit_account_id = session.config_id.cash_journal.default_debit_account_id.id
 			vals_debit = {
 				'account_id': debit_account_id,
 				'name': 'Deposito ' + session.name,

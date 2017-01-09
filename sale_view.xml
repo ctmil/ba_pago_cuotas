@@ -163,9 +163,9 @@
 			<button name="bank_deposit" string="Depositar en Banco" 
 				type="object" states="opened"/>
 		  </button>
-		  <field name="deposit_ids" position="after">
+		  <field name="statement_ids" position="after">
 			   <separator string="Depositos bancarios" />
-        	           <field name="statement_ids" >
+        	           <field name="deposit_ids" >
                 	            <tree string="Depositos Bancarios" editable="bottom" create="false" delete="false"> 
                         	        <field name="name" readonly="1"/>
 	                                <field name="date" readonly="1"/>
