@@ -32,7 +32,16 @@ class bank_deposit_pdv(models.TransientModel):
 					'date': str(date.today()),
 					}
 		statement_line = self.env['account.bank.statement.line'].create(vals)		
-		"""
+		vals_deposit = {
+			'user_id': self.env.context['uid'],
+			'session_id': session.id,
+			'date': str(date.today()),
+			'amount': self.amount,
+			'name': 'Deposito ' + session.name,
+			'statement_line_id': statement_line.id,
+			}
+		deposit_id = self.env['pos.session.deposit'].create(vals_deposit)
+		
 		vals_move = {
 			'date': str(date.today()),
 			'journal_id': session.config_id.journal_id.id,
@@ -58,16 +67,12 @@ class bank_deposit_pdv(models.TransientModel):
 				}
 			credit_line_id = self.env['account.move.line'].create(vals_credit)
 			move_id.post()
-			vals_deposit = {
-				'user_id': self.env.context['uid'],
-				'session_id': session.id,
-				'date': str(date.today()),
-				'amount': self.amount,
-				'name': 'Deposito ' + session.name,
-				'move_id': move_id.id,
+			vals_line = {
+				'journal_entry_id': move_id.id,
 				}
-			deposit_id = self.env['pos.session.deposit'].create(vals_deposit)
-		"""	
+			statement_line.write(vals_line)
+			
+			
 
 	name = fields.Char('Nombre')
 	user_id = fields.Many2one('res.users')

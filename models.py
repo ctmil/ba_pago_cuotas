@@ -219,7 +219,7 @@ class pos_session_deposit(models.Model):
 	_name = 'pos.session.deposit'
 
 	name = fields.Char('Nombre')
-	move_id = fields.Many2one('account.move',string='Mov Contable')
+	statement_line_id = fields.Many2one('account.bank.statement.line',string='Statement Line')
 	date = fields.Date('Fecha')
 	user_id = fields.Many2one('res.users',string='Usuario')
 	amount = fields.Float('Monto')
