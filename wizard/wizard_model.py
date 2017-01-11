@@ -27,6 +27,7 @@ class bank_deposit_pdv(models.TransientModel):
 				vals = {
 					'statement_id': statement.id,
 					'ref': 'Deposito ' + session.name,
+					'name': 'Deposito ' + session.name,
 					'amount': self.amount * (-1),
 					'date': str(date.today()),
 					}
