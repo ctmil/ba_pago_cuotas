@@ -107,7 +107,7 @@
         model="pos.session"
         string="POS Detalles de Ventas"
         report_type="qweb-pdf" 
-        name="pos_session_details.qweb_pos_session_details"/>
+        name="ba_pago_cuotas.qweb_pos_session_details"/>
 
 
     </data>

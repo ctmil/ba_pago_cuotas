@@ -99,7 +99,7 @@
         model="pos.session"
         string="POS small report"
         report_type="qweb-pdf" 
-        name="pos_session_details.qweb_pos_small_report"/>
+        name="ba_pago_cuotas.qweb_pos_small_report"/>
 
 
     </data>
