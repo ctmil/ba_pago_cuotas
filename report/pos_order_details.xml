@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <template id="qweb_pos_order_details">
+        	<t t-call="report.html_container">
+        		<t t-foreach="docs" t-as="o">
+        		<t t-call="report.internal_layout">
+	        			<div class="page">
+	        				<h2>POS Detalles de la Orden: <span t-field="o.name"/></h2>
+
+		                    <div class="row mt32 mb32">
+			                        <div class="col-xs-3">
+			                            <strong>Responsable</strong>:<br/>
+			                            <span t-field="o.user_id"/>
+			                        </div>
+			                        <div class="col-xs-3">
+			                            <strong>Sesion</strong>:<br/>
+			                            <span t-field="o.session_id"/>
+			                        </div>
+			                        <div class="col-xs-3">
+			                            <strong>Depósito</strong>:<br/>
+			                            <span t-field="o.location_id"/>
+			                        </div>
+			                        <div class="col-xs-3">
+			                            <strong>Estado</strong>:<br/>
+			                            <span t-field="o.state"/>
+			                        </div>
+		                     </div>
+
+
+
+	        		</div>
+                </t>
+            	</t>
+            </t>
+
+         </template>
+
+
+        <report
+        id="report_pos_order_details"
+        model="pos.order"
+        string="POS Detalles de la Orden"
+        report_type="qweb-pdf" 
+        name="pos_session_details.qweb_pos_order_details"/>
+
+
+    </data>
+</openerp>

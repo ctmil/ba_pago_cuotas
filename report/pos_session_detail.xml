@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<openerp>
+    <data>
+        <template id="qweb_pos_session_details">
+        	<t t-call="report.html_container">
+        		<t t-foreach="docs" t-as="o">
+        		<t t-call="report.internal_layout">
+	        			<div class="page">
+	        				<h2>TPV Detalles de Sesión: <span t-field="o.name"/></h2>
+
+		                    <div class="row mt32 mb32">
+			                        <div class="col-xs-3">
+			                            <strong>Responsable</strong>:<br/>
+			                            <span t-field="o.user_id"/>
+			                        </div>
+			                        <div class="col-xs-3">
+			                            <strong>Punto de Venta</strong>:<br/>
+			                            <span t-field="o.config_id"/>
+			                        </div>
+			                        <div class="col-xs-3">
+			                            <strong>Apertura</strong>:<br/>
+			                            <span t-field="o.start_at"/>
+			                        </div>
+			                        <div class="col-xs-3">
+			                            <strong>Cierre</strong>:<br/>
+			                            <span t-field="o.stop_at"/>
+			                        </div>
+		                     </div>
+
+	                        <h4 t-if="o.order_ids">Detalles de Transacciones</h4>
+
+	                        <table class="table table-condensed" t-if="o.order_ids">
+	                            <thead>
+	                                <tr>
+	                                    <th>Fecha</th>
+	                                    <th>Nro.Factura</th>
+	                                    <th>Referencia</th>
+	                                    <th>Cliente</th>
+	                                    <th>Remito</th>
+	                                    <th class="text-right">Monto</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                                <tr t-foreach="o.order_ids" t-as="line">
+	                                    <td><span t-field="line.date_order"/></td>
+	                                    <td><span t-field="line.nro_factura"/></td>
+	                                    <td><span t-field="line.name"/></td>
+	                                    <td><span t-field="line.partner_id.name"/></td>
+	                                    <td><span t-field="line.picking_id.name"/></td>
+	                                    <td class="text-right">
+	                                        <span t-field="line.amount_total" />
+	                                    </td>
+	                                </tr>
+	                            </tbody>
+
+	                        </table>
+
+	                    <t t-foreach="o.statement_ids" t-as="statement">
+	                        <h4 t-if="statement.line_ids">Detalles de Pagos: <span t-esc="statement.name"/></h4>
+
+	                        <table class="table table-condensed" t-if="statement.line_ids">
+	                            <thead>
+	                                <tr>
+	                                    <th>Fecha</th>
+	                                    <th>Descripción</th>
+	                                    <th>Referencia</th>
+	                                    <th>Cliente</th>
+	                                    <th>Cupón</th>
+	                                    <th>Tarjeta</th>
+	                                    <th class="text-right">Monto</th>
+	                                </tr>
+	                            </thead>
+	                            <tbody>
+	                                <tr t-foreach="statement.line_ids" t-as="line">
+	                                    <td><span t-field="line.write_date"/></td>
+	                                    <td><span t-field="line.name"/></td>
+	                                    <td><span t-field="line.ref"/></td>
+	                                    <td><span t-field="line.partner_id"/></td>
+	                                    <td><span t-field="line.nro_cupon"/></td>
+	                                    <td><span t-field="line.nro_tarjeta"/></td>
+	                                    <td class="text-right">
+	                                        <span t-field="line.amount" />
+	                                    </td>
+	                                </tr>
+	                                <tr>
+	                                	<td class="lead" colspan="5">Total</td>
+	                                	<td class="text-right" colspan="6"> 
+	                                		<span t-field="statement.balance_end_real" style="font-size: 15px;" />
+	                                	</td>
+	                                </tr>
+	                            </tbody>
+
+	                        </table>
+	                    </t>
+
+	        		</div>
+                </t>
+            	</t>
+            </t>
+
+         </template>
+
+
+        <report
+        id="report_pos_session_detail"
+        model="pos.session"
+        string="POS Detalles de Ventas"
+        report_type="qweb-pdf" 
+        name="pos_session_details.qweb_pos_session_details"/>
+
+
+    </data>
+</openerp>
