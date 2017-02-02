@@ -27,7 +27,7 @@ class pos_session(osv.osv):
 						for move_line in order.invoice_id.move_id.line_id:
 							if move_line.debit > 0:							
 								move_line_invoice = move_line.id
-					if order.statement_ids:
+					if order.statement_ids and move_line_invoice:
 						for statement in order.statement_ids:
 							if statement.journal_entry_id:
 								for move_line in statement.journal_entry_id.line_id:
