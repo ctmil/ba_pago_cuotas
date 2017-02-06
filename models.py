@@ -145,25 +145,25 @@ class sale_cuotas(models.Model):
 		if self.journal_id and self.bank_id and self.cuotas:
 			self.name = self.journal_id.name + ' - ' + self.bank_id.bic + ' - ' + str(self.cuotas)
 	
-	@api.one
-	@api.constrains('cuotas')
-	def _check_cuotas(self):
-		if self.cuotas > 36 or self.cuotas < 1:
-			raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
+	#@api.one
+	#@api.constrains('cuotas')
+	#def _check_cuotas(self):
+	#	if self.cuotas > 36 or self.cuotas < 1:
+	#		raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
 
-	@api.one
-	@api.constrains('coeficiente')
-	def _check_coeficiente(self):
-		if self.coeficiente > 5 or self.coeficiente < 0:
-			raise ValidationError('El coeficiente ingresado debe ser entre 0 y 5')
+	#@api.one
+	#@api.constrains('coeficiente')
+	#def _check_coeficiente(self):
+	#	if self.coeficiente > 5 or self.coeficiente < 0:
+	#		raise ValidationError('El coeficiente ingresado debe ser entre 0 y 5')
 
-	@api.one
-	@api.constrains('bank_id','journal_id','cuotas')
-	def _check_unique(self):
-		cuotas = self.search([('journal_id','=',self.journal_id.id),\
-				('bank_id','=',self.bank_id.id),('cuotas','=',self.cuotas)])
-		if len(cuotas) > 1:
-			raise ValidationError('El plan de cuotas ya esta ingresado')
+	#@api.one
+	#@api.constrains('bank_id','journal_id','cuotas')
+	#def _check_unique(self):
+	#	cuotas = self.search([('journal_id','=',self.journal_id.id),\
+	#			('bank_id','=',self.bank_id.id),('cuotas','=',self.cuotas)])
+	#	if len(cuotas) > 1:
+	#		raise ValidationError('El plan de cuotas ya esta ingresado')
 	
 	name = fields.Char('Nombre',readonly=True,compute=_compute_name)
 	bank_id = fields.Many2one('res.bank',string='Banco',required=True)
