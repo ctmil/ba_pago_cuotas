@@ -148,7 +148,6 @@ class sale_cuotas(models.Model):
 	@api.one
 	@api.constrains('cuotas')
 	def _check_cuotas(self):
-		import pdb;pdb.set_trace()
 		if self.cuotas > 36 or self.cuotas < 1:
 			raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
 
@@ -168,7 +167,7 @@ class sale_cuotas(models.Model):
 	
 	name = fields.Char('Nombre',readonly=True,compute=_compute_name)
 	bank_id = fields.Many2one('res.bank',string='Banco',required=True)
-	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','in',('cash','banks'))],required=True)
+	journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','=','banks')],required=True)
 	cuotas = fields.Integer(string='Cuotas',help='Cantidad de cuotas, debe ser menor a 36')
 	product_id = fields.Many2one('product.product',string='Producto')
 	monto = fields.Float(string='Monto')
