@@ -11,7 +11,8 @@
 	'report/pos_order_details.xml',
 	'report/pos_session_detail.xml',
 	'report/pos_session_resume.xml',
-	'report/pos_small_report.xml'
+	'report/pos_small_report.xml',
+	'report/pos_order_installments.xml'
     ],
     'demo': [
     ],
