@@ -143,7 +143,7 @@ class pos_make_payment(osv.osv_memory):
 					data['amount'] = amount * (1+cuotas.coeficiente) + tax_surcharge
 					return_id = self.pool.get('pos.make.payment').write(cr,uid,ids,vals)
 		res = super(pos_make_payment,self).check(cr,uid,ids,context)
-		if cuotas:
+		if cuotas and cuotas.cuotas > 0:
 			total_amount = amount * ( 1 + cuotas.coeficiente )
 			statement_id = self.pool.get('account.bank.statement.line').\
 				search(cr,uid,[('pos_statement_id','=',context['active_id']),\
@@ -156,6 +156,18 @@ class pos_make_payment(osv.osv_memory):
 					'nro_tarjeta': data.get('nro_tarjeta','N/A'),				
 					}
 				return_id = self.pool.get('account.bank.statement.line').write(cr,uid,statement_id,vals)
+				range_cuotas = range(1,cuotas.cuotas)
+				monto_capital = amount / cuotas.cuotas
+				monto_interes = (total_amount - amount) / cuotas.cuotas	
+				for cuota in range_cuotas:
+					vals_cuotas = {
+						'order_id': context['active_id'],
+						'statement_id': statement_id,
+						'nro_cuota': cuota,
+						'monto_capital': monto_capital,
+						'monto_interes': monto_interes
+						}
+					return_id = self.pool.get('pos.order.installment').create(cr,uid,vals_cuotas)				
 		if order.test_paid():
 			if order.sale_journal.type == 'sale':
 				# Creates invoice

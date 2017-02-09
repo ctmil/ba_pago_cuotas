@@ -24,7 +24,20 @@ class account_bank_statement_line(models.Model):
 
 	cuotas_id = fields.Many2one('sale.cuotas',string='Plan de cuotas')	
 	nro_cupon = fields.Char('Nro cupon')
-	nro_tarjeta = fields.Char('Nro tarjeta')	
+	nro_tarjeta = fields.Char('Nro tarjeta')
+	installment_ids = fields.One2many(comodel_name='pos.order.installment',inverse_name='statement_line_id')	
+
+class pos_order_installment(models.Model):
+	_name = 'pos.order.installment'
+	_description = 'Describe las cuotas asociadas a un pedido'
+
+	order_id = fields.Many2one('pos.order',string='Pedido')
+	statement_line_id = fields.Many2one('acccount.bank.statement.line',string='Medio de pago')
+	nro_cuota = fields.Integer('Cuota')
+	monto_capital = fields.Float('Monto Capital')
+	monto_interes = fields.Float('Monto Interes')
+
+
 
 class pos_config_journal(models.Model):
 	_name = 'pos.config.journal'
@@ -184,6 +197,7 @@ class pos_order(models.Model):
 		self.nro_factura = return_value
 
 	nro_factura = fields.Char(string='Nro Factura',compute=_compute_nro_factura)
+	installment_ids = fields.One2many(comodel_name='pos.order.installment',inverse_name='order_id')
 
 class pos_session(models.Model):
 	_inherit = 'pos.session'

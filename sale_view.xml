@@ -14,7 +14,7 @@
         	            <field name="product_id"/>
 			</group>
 			<group string="Cuotas y monto">
-		                 <field name="cuotas"/>
+		            <field name="cuotas"/>
         	            <field name="monto"/>
         	            <field name="coeficiente"/>
 			</group>
@@ -118,6 +118,9 @@
 		</field>
 		<field name="invoice_id" position="after">
 			<field name="nro_factura" />
+		</field>
+		<field name="note" position="after">
+			<field name="installment_ids" />
 		</field>
             </field>
         </record>
