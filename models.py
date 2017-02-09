@@ -40,8 +40,8 @@ class pos_order_installment(models.Model):
 	statement_line_id = fields.Many2one('account.bank.statement.line',string='Medio de pago')
 	journal_id = fields.Many2one('account.journal',string='Medio de Pago',compute='_compute_journal_id')
 	nro_cuota = fields.Integer('Cuota')
-	monto_capital = fields.Float('Monto Capital')
-	monto_interes = fields.Float('Monto Interes')
+	monto_capital = fields.Float('Monto Capital',digits_compute=dp.get_precision('Account'))
+	monto_interes = fields.Float('Monto Interes',digits_compute=dp.get_precision('Account'))
 
 
 
