@@ -31,8 +31,14 @@ class pos_order_installment(models.Model):
 	_name = 'pos.order.installment'
 	_description = 'Describe las cuotas asociadas a un pedido'
 
+	@api.one
+	def _compute_journal_id(self):
+		if self.statement_line_id:
+			self.journal_id = self.statement_line_id.journal_id.id
+
 	order_id = fields.Many2one('pos.order',string='Pedido')
-	statement_line_id = fields.Many2one('acccount.bank.statement.line',string='Medio de pago')
+	statement_line_id = fields.Many2one('account.bank.statement.line',string='Medio de pago')
+	journal_id = fields.Many2one('account.journal',string='Medio de Pago',compute='_compute_journal_id')
 	nro_cuota = fields.Integer('Cuota')
 	monto_capital = fields.Float('Monto Capital')
 	monto_interes = fields.Float('Monto Interes')

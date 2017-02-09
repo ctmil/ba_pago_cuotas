@@ -124,7 +124,7 @@
 			<field name="installment_ids">
 				<tree string="Cuotas">
 					<field name="nro_cuota" />
-					<field name="statement_line_id" />
+					<field name="journal_id" />
 					<field name="monto_capital" />
 					<field name="monto_interes" />
 				</tree>

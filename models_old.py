@@ -162,7 +162,7 @@ class pos_make_payment(osv.osv_memory):
 				for cuota in range_cuotas:
 					vals_cuotas = {
 						'order_id': context['active_id'],
-						'statement_id': statement_id,
+						'statement_line_id': statement_id[0],
 						'nro_cuota': cuota,
 						'monto_capital': monto_capital,
 						'monto_interes': monto_interes
