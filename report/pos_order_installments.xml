@@ -120,9 +120,40 @@
                         </tbody>
                     </table>
 
-
 		    <h2>Cuotas</h2>
 
+                    <table class="table table-condensed mb32">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <strong>Cuota</strong>
+                                </th>
+                                <th>
+				    <strong>Medio de Pago</strong>
+                                </th>
+                                <th class="text-right">
+                                    <strong>Monto Capital</strong>
+                                </th>
+                                <th class="text-right">
+                                    <strong>Monto Interes</strong>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="o.installment_ids" t-as="installment">
+                                <td><span t-field="installment.nro_cuota"/></td>
+                                <td>
+                                    <span t-field="installment.journal_id.name" />
+                                </td>
+                                <td class="text-right" >
+                                    <span t-field="installment.monto_capital"/>
+                                </td>
+                                <td class="text-right" >
+                                    <span t-field="installment.monto_interes"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     </div>
                    </t>
