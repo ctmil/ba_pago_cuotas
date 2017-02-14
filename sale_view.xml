@@ -12,6 +12,10 @@
 	                    <field name="bank_id"/>
 	                    <field name="journal_id"/>
         	            <field name="product_id"/>
+                        <field name="sale_order_default"/>
+                        <field name="tipo"/>
+                        <field name="active"/>
+
 			</group>
 			<group string="Cuotas y monto">
 		            <field name="cuotas"/>
@@ -27,7 +31,7 @@
             <field name="model">sale.cuotas</field>
             <field name="arch" type="xml">
                 <tree string="Monto por Cuotas">
-		    <field name="name" />
+        		    <field name="name" />
                     <field name="bank_id"/>
                     <field name="journal_id"/>
                     <field name="product_id"/>
@@ -46,6 +50,50 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record id="sale_cuotas_tree_edit_view" model="ir.ui.view">
+            <field name="name">sale.cuotas.tree.edit.view</field>
+            <field name="model">sale.cuotas</field>
+            <field name="arch" type="xml">
+                <tree string="Editor de coeficientes" editable="top" >
+                    <field name="journal_id" readonly="1"/>
+                    <field name="cuotas" readonly="1"/>
+                    <field name="coeficiente"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="action_ba_cuotas_edit" model="ir.actions.act_window">
+            <field name="name">Editor de coeficientes</field>
+            <field name="res_model">sale.cuotas</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree</field>
+            <field name="context">{'group_journal_id': 1}</field>
+
+
+        </record>
+
+        <record model="ir.ui.view" id="ba_cuotas_config_search">
+            <field name="name">sale.cuotas.search</field>
+            <field name="model">sale.cuotas</field>
+            <field name="arch" type="xml">
+                <search string="Coutas">
+                    <field name="name" />
+                    <field name="bank_id"/>
+                    <field name="journal_id"/>
+                    <field name="product_id"/>
+                    <field name="cuotas"/>
+
+                   <group expand="0" string="Group By">
+                       <filter string="journal_id" name="group_journal_id" context="{'group_by': 'journal_id'}"/>
+                       <filter string="bank_id" name="group_bank_id" context="{'group_by': 'bank_id'}"/>
+                   </group>
+               </search>
+
+            </field>
+        </record>
+
+
 
         <menuitem id="menu_ba_sales_config" name="Blancoamor" 
             parent="base.menu_base_config" sequence="100"/>
@@ -54,6 +102,11 @@
             parent="menu_ba_sales_config" 
 	    action="action_ba_cuotas_config"
 	    sequence="100"/>
+
+        <menuitem id="menu_ba_sales_cuotas_edit" name="Editar Coeficientes" 
+            parent="menu_ba_sales_config" 
+        action="action_ba_cuotas_edit"
+        sequence="1"/>
 
         <record id="view_sale_order_form_ba" model="ir.ui.view">
             <field name="name">sale.order.form.ba</field>
