@@ -151,27 +151,30 @@ class sale_cuotas(models.Model):
 
 
 
-    @api.multi
-    def name_get(self):
-        res = super(sale_cuotas,self).name_get()
-        data = []
-        min_qty = 0
-        for sale_cuota in self:
-            if sale_cuota.journal_id and sale_cuota.bank_id and sale_cuota.cuotas:
-                display_value = sale_cuota.journal_id.name + ' - ' + sale_cuota.bank_id.bic + ' - ' + str(sale_cuota.cuotas)
-            elif self.journal_id  and self.cuotas:
-                display_value = self.journal_id.name + ' - ' + str(self.cuotas)
+    # @api.multi
+    # def name_get(self):
+    #     res = super(sale_cuotas,self).name_get()
+    #     data = []
+    #     min_qty = 0
+    #     for sale_cuota in self:
+    #         if sale_cuota.journal_id and sale_cuota.bank_id and sale_cuota.cuotas:
+    #             display_value = sale_cuota.journal_id.name + ' - ' + sale_cuota.bank_id.bic + ' - ' + str(sale_cuota.cuotas)
+    #         elif self.journal_id  and self.cuotas:
+    #             display_value = self.journal_id.name + ' - ' + str(self.cuotas)
 
-            data.append((sale_cuota.id,display_value))
-        return data
+    #         data.append((sale_cuota.id,display_value))
+    #     return data
 
     @api.one
-    @api.onchange('journal_id','bank_id','cuotas')
+    @api.depends('journal_id','bank_id','cuotas')
     def _compute_name(self):
         if self.journal_id and self.bank_id and self.cuotas:
             self.name = self.journal_id.name + ' - ' + self.bank_id.bic + ' - ' + str(self.cuotas)
         elif self.journal_id  and self.cuotas:
             self.name = self.journal_id.name + ' - ' + str(self.cuotas)
+        else :
+            self.name = 'N/A'
+
 
     @api.model
     def name_search(self, name, args=None, operator='ilike', limit=100):
@@ -204,6 +207,7 @@ class sale_cuotas(models.Model):
     #        raise ValidationError('El plan de cuotas ya esta ingresado')
     
     name = fields.Char('Nombre',compute=_compute_name,store=True)
+
     bank_id = fields.Many2one('res.bank',string='Banco')
     journal_id = fields.Many2one('account.journal',string='Diario',domain=[('type','=','banks')])
     cuotas = fields.Integer(string='Cuotas',help='Cantidad de cuotas, debe ser menor a 36')
@@ -214,6 +218,10 @@ class sale_cuotas(models.Model):
     sale_order_default = fields.Boolean('Disponible por defecto en presupuestos')
     tipo = fields.Selection([('credito', 'Credito'),('debito', 'Debito')],default='credito')
     active = fields.Boolean('Activo',default=True)
+    fantasy_name = fields.Char('Nombre fantasia')
+    ctf = fields.Float(string='C.T.F.',help='Costo total financiado')
+    tea = fields.Float(string='TEA',help='Taza Anual')
+
 
 
 class pos_order(models.Model):
