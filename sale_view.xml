@@ -9,6 +9,8 @@
                 <form string="Monto por Cuotas">
 			<group string="Tipo de pago y producto a agregar">
 		    	    <field name="name" />
+                        <field name="fantasy_name" />
+
 	                    <field name="bank_id"/>
 	                    <field name="journal_id"/>
         	            <field name="product_id"/>
@@ -21,6 +23,8 @@
 		            <field name="cuotas"/>
         	            <field name="monto"/>
         	            <field name="coeficiente"/>
+                        <field name="ctf"/>
+                        <field name="tea"/>
 			</group>
                 </form>
             </field>
@@ -48,6 +52,10 @@
             <field name="res_model">sale.cuotas</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="sale_cuotas_tree_view"/>
+            <field name="context">{'search_default_group_journal_id': 1,'search_default_is_active':True}</field>
+
+
         </record>
 
         <record id="sale_cuotas_tree_edit_view" model="ir.ui.view">
@@ -58,6 +66,8 @@
                     <field name="journal_id" readonly="1"/>
                     <field name="cuotas" readonly="1"/>
                     <field name="coeficiente"/>
+                    <field name="ctf"/>
+                    <field name="tea"/>
                 </tree>
             </field>
         </record>
@@ -68,7 +78,7 @@
             <field name="res_model">sale.cuotas</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree</field>
-            <field name="context">{'group_journal_id': 1}</field>
+            <field name="view_id" ref="sale_cuotas_tree_edit_view"/>
 
 
         </record>
@@ -83,6 +93,8 @@
                     <field name="journal_id"/>
                     <field name="product_id"/>
                     <field name="cuotas"/>
+                    <field name="active"/>
+                    <filter string="Activas" name="is_active" context="{'active': True}"/>
 
                    <group expand="0" string="Group By">
                        <filter string="journal_id" name="group_journal_id" context="{'group_by': 'journal_id'}"/>
