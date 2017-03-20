@@ -287,7 +287,14 @@ class pos_return(models.Model):
         origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]")
         date = fields.Date('Fecha',default=date.today())
 	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id')
-	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado')])
+	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado')],default="draft")
+
+	@api.one
+	def confirm_refund(self):
+		vals = {
+			'state': 'done'
+			}
+		self.write(vals)
 
 	@api.one
 	def fill_products(self):

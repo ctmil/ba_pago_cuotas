@@ -261,7 +261,8 @@
              <field name="arch" type="xml">
                  <form string="PDV - Devoluciones">
 			<header>
-				<button name="fill_products" type="object" string="Completar Productos" />
+				<button name="fill_products" type="object" string="Completar Productos" states="draft"/>
+				<button name="confirm_refund" type="object" string="Confirmar" states="draft"/>
 				<field name="state" widget="statusbar"/>
 			</header>
 			<sheet>
@@ -276,7 +277,7 @@
 				<notebook>
 					<page string="Productos">
 						<field name="return_line">
-							<tree string="Productos" create="false" edit="false" delete="false">
+							<tree string="Productos" create="false" >
 								<field name="origin_id" />
 								<field name="product_id" />
 					                         <field name="qty" />
