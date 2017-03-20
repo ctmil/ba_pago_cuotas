@@ -277,13 +277,6 @@ class pos_session_deposit(models.Model):
 	nro_deposito = fields.Char('Nro Deposito')
 	session_id = fields.Many2one('pos.session')
 
-class pos_return_line(models.Model):
-	_name = 'pos.return.line'
-	_description = 'Linea Devolucion PDV'
-
-	return_id = fields.Many2one('pos.return')
-	product_id = fields.Many2one('product.product')
-
 class pos_return(models.Model):
         _name = 'pos.return'
         _description = 'Devoluciones PDV'
@@ -293,13 +286,32 @@ class pos_return(models.Model):
         partner_id = fields.Many2one('res.partner',string='Cliente')
         origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]")
         date = fields.Date('Fecha',default=date.today())
+	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id')
+	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado')])
 
-	@api.onchange('origin_id')
-	def _onchange_origin_id(self):
+	@api.one
+	def fill_products(self):
+		for line in self.return_line:
+			line.unlink()
 		if self.origin_id:
-			for line in self.origin_id.order_line:
+			for line in self.origin_id.lines:
 				vals = {
-					'return_id': self.origin_id.id,
-					'product_id': line.product_id.id
+					'return_id': self.id,
+					'origin_id': self.origin_id.id,
+					'product_id': line.product_id.id,
+					'qty': line.qty,
+					'price_unit': line.price_unit,
+					'price_subtotal': line.price_subtotal,
 					}
 				return_id = self.env['pos.return.line'].create(vals)
+
+class pos_return_line(models.Model):
+	_name = 'pos.return.line'
+	_description = 'Linea Devolucion PDV'
+
+	return_id = fields.Many2one('pos.return')
+	origin_id = fields.Many2one('pos.order')
+	product_id = fields.Many2one('product.product',string='Producto')
+	qty  = fields.Float('Cantidad')
+	price_unit = fields.Float('Precio Unitario')
+	price_subtotal = fields.Float('Subtotal (c/impuestos)')
