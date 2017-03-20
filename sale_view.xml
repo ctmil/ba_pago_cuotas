@@ -255,6 +255,36 @@
 	    </field>
         </record>
 
+        <record id="pos_return_form_view" model="ir.ui.view">
+             <field name="name">pos.return.form.view</field>
+             <field name="model">pos.return</field>
+             <field name="arch" type="xml">
+                 <form string="PDV - Devoluciones">
+			<header>
+			</header>
+			<sheet>
+				<group>
+		                         <field name="name" />
+        	                	 <field name="date" />
+				</group>
+				<group string="Origen">
+	        	                 <field name="partner_id" />
+        	        	         <field name="origin_id" />
+				</group>
+				<notebook>
+					<page string="Productos">
+						<field name="return_line">
+							<tree string="Productos">
+								<field name="product_id" />
+							</tree>
+						</field>
+					</page>
+				</notebook>
+			</sheet>
+                 </form>
+             </field>
+         </record>
+
         <record id="pos_return_tree_view" model="ir.ui.view">
              <field name="name">pos.return.tree.view</field>
              <field name="model">pos.return</field>
