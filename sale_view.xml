@@ -190,5 +190,31 @@
 	    </field>
         </record>
 
+        <record id="pos_return_tree_view" model="ir.ui.view">
+             <field name="name">pos.return.tree.view</field>
+             <field name="model">pos.return</field>
+             <field name="arch" type="xml">
+                 <tree string="PDV - Devoluciones">
+                         <field name="name" />
+                         <field name="partner_id" />
+                         <field name="origin_id" />
+                         <field name="date" />
+                 </tree>
+             </field>
+         </record>
+ 
+ 
+         <record id="action_ba_pdv_return" model="ir.actions.act_window">
+             <field name="name">Devoluciones</field>
+             <field name="res_model">pos.return</field>
+             <field name="view_type">form</field>
+             <field name="view_mode">tree,form</field>
+         </record>
+ 
+         <menuitem id="menu_ba_pdv_return" name="Devoluciones" 
+             parent="point_of_sale.menu_point_of_sale" 
+             action="action_ba_pdv_return"
+             sequence="150"/>
+
     </data>
 </openerp>

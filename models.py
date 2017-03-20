@@ -244,3 +244,14 @@ class pos_session_deposit(models.Model):
 	amount = fields.Float('Monto')
 	nro_deposito = fields.Char('Nro Deposito')
 	session_id = fields.Many2one('pos.session')
+
+class pos_return(models.Model):
+        _name = 'pos.return'
+        _description = 'Devoluciones PDV'
+
+
+        name = fields.Char('Nombre')
+        partner_id = fields.Many2one('res.partner',string='Cliente')
+        origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]")
+        date = fields.Date('Fecha')
+
