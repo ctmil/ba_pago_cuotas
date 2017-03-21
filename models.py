@@ -291,6 +291,7 @@ class pos_return(models.Model):
 	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')],required=True)
 	journal_id = fields.Many2one('account.journal',domain=[('journal_user','=',True)],required=True)
 	statement_id = fields.Many2one('account.bank.statement.line','Pago',readonly=True)
+	picking_id = fields.Many2one('stock.picking',string='Remito',readonly=True)
 	
 	@api.one
 	def confirm_refund(self):
@@ -311,7 +312,31 @@ class pos_return(models.Model):
 			'amount': amount * (-1)
 			}	
 		statement_line_id = self.env['account.bank.statement.line'].create(vals_statement_line)
+		# creates picking
+		vals_picking = {
+			'partner_id': self.partner_id.id,
+			'date': self.date,
+			'origin': self.name,
+			}
+		picking_id = self.env['stock.picking'].create(vals_picking)
+		source_location = self.env['stock.location'].search([('usage','=','customer')])
+		if not source_location:
+			raise ValidationError('No esta definida ubicacion de clientes.\nContactese con administrador')
+	
+		for line in self.return_line:
+			vals_move = {
+				'date': self.date,
+				'picking_id': picking_id.id,
+				'product_id': line.product_id.id,
+				'product_uom_qty': line.qty,
+				'name': self.name,
+				'location_id': source_location.id,
+				'location_dest_id': self.session_id.config_id.stock_location_id.id,
+				}
+			move_id = self.env['stock.move'].create(vals_move)
+		# creates refund
 		vals = {
+			'picking_id': picking_id.id,
 			'state': 'done',
 			'statement_id': statement_line_id.id,
 			}

@@ -272,6 +272,7 @@
                          		 <field name="session_id" />
                          		 <field name="journal_id" />
 					 <field name="statement_id" />
+					 <field name="picking_id" />
 				</group>
 				<group string="Origen" col="4" colspan="4">
 	        	                 <field name="partner_id" />
