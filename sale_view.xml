@@ -266,27 +266,30 @@
 				<field name="state" widget="statusbar"/>
 			</header>
 			<sheet>
+				<h1>
+                                    <label string="Devolucion" attrs="{'invisible': [('state','=','draft')]}"/>
+	                            <field name="name" class="oe_inline"  attrs="{'invisible': [('state', '=', 'draft')]}"/>
+				</h1>
 				<group col="4" colspan="4" string="General">
-		                         <field name="name" readonly="1"/>
-        	                	 <field name="date" states="draft"/>
-                         		 <field name="session_id" states="draft"/>
-                         		 <field name="journal_id" states="draft"/>
+        	                	 <field name="date" />
+                         		 <field name="session_id" />
+                         		 <field name="journal_id" />
 					 <field name="statement_id" />
 					 <field name="picking_id" />
 				</group>
 				<group string="Origen" col="4" colspan="4">
-	        	                 <field name="partner_id" states="draft"/>
-        	        	         <field name="origin_id" states="draft"/>
+	        	                 <field name="partner_id" />
+        	        	         <field name="origin_id" />
 				</group>
 				<notebook>
 					<page string="Productos">
-						<field name="return_line">
+						<field name="return_line" >
 							<tree string="Productos" create="false" >
-								<field name="origin_id" states="draft"/>
-								<field name="product_id" states="draft"/>
-					                         <field name="qty" states="draft"/>
-					                         <field name="price_unit" states="draft"/>
-						                <field name="price_subtotal" states="draft"/>
+								<field name="origin_id" />
+								<field name="product_id" />
+					                         <field name="qty" />
+					                         <field name="price_unit" />
+						                <field name="price_subtotal" />
 							</tree>
 						</field>
 					</page>

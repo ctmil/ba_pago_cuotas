@@ -282,20 +282,21 @@ class pos_return(models.Model):
         _description = 'Devoluciones PDV'
 
 
-        name = fields.Char('Nombre')
-        partner_id = fields.Many2one('res.partner',string='Cliente')
-        origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]")
-        date = fields.Date('Fecha',default=date.today())
-	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id')
+        name = fields.Char('Nombre', readonly=True)
+        partner_id = fields.Many2one('res.partner',string='Cliente', states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
+        origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]", states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
+        date = fields.Date('Fecha',default=date.today(),readonly=True)
+	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id', states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
 	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado')],default="draft")
-	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')],required=True)
-	journal_id = fields.Many2one('account.journal',domain=[('journal_user','=',True)],required=True)
+	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')],required=True, states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
+	journal_id = fields.Many2one('account.journal',domain=[('journal_user','=',True)],required=True, states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
 	statement_id = fields.Many2one('account.bank.statement.line','Pago',readonly=True)
 	picking_id = fields.Many2one('stock.picking',string='Remito',readonly=True)
 	
 	@api.one
 	def confirm_refund(self):
 		# creates bank statement line
+		my_sequence = self.env['ir.sequence'].get('pos.return')
 		if not self.journal_id or not self.return_line:
 			raise ValidationError('Debe seleccionarse medio de pago y completar los productos')
 		statement_id = self.env['account.bank.statement'].search([('journal_id','=',self.journal_id.id),\
@@ -306,7 +307,7 @@ class pos_return(models.Model):
 		for line in self.return_line:
 			amount = amount + line.price_subtotal
 		vals_statement_line = {
-			'name': 'Pago devolucion ' + self.name,
+			'name': 'Pago devolucion ' + my_sequence,
 			'journal_id': self.journal_id.id,
 			'statement_id': statement_id.id,
 			'amount': amount * (-1)
@@ -317,7 +318,7 @@ class pos_return(models.Model):
 		vals_picking = {
 			'partner_id': self.partner_id.id,
 			'date': self.date,
-			'origin': self.name,
+			'origin': my_sequence,
 			'picking_type_id': picking_type_id.id,
 			}
 		picking_id = self.env['stock.picking'].create(vals_picking)
@@ -331,14 +332,19 @@ class pos_return(models.Model):
 				'product_id': line.product_id.id,
 				'product_uom': 1,
 				'product_uom_qty': line.qty,
-				'name': self.name,
+				'name': my_sequence,
 				'location_id': source_location.id,
 				'location_dest_id': self.session_id.config_id.stock_location_id.id,
 				'picking_type_id': picking_type_id.id,
 				}
 			move_id = self.env['stock.move'].create(vals_move)
+                picking_id.action_confirm()
+                picking_id.force_assign()
+                picking_id.action_done()
+
 		# creates refund
 		vals = {
+			'name': my_sequence,
 			'picking_id': picking_id.id,
 			'state': 'done',
 			'statement_id': statement_line_id.id,
