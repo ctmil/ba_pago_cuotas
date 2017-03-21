@@ -313,25 +313,28 @@ class pos_return(models.Model):
 			}	
 		statement_line_id = self.env['account.bank.statement.line'].create(vals_statement_line)
 		# creates picking
+		picking_type_id = self.env['stock.picking.type'].search([('code','=','incoming')])
 		vals_picking = {
 			'partner_id': self.partner_id.id,
 			'date': self.date,
 			'origin': self.name,
+			'picking_type_id': picking_type_id.id,
 			}
 		picking_id = self.env['stock.picking'].create(vals_picking)
 		source_location = self.env['stock.location'].search([('usage','=','customer')])
 		if not source_location:
 			raise ValidationError('No esta definida ubicacion de clientes.\nContactese con administrador')
-	
 		for line in self.return_line:
 			vals_move = {
 				'date': self.date,
 				'picking_id': picking_id.id,
 				'product_id': line.product_id.id,
+				'product_uom': 1,
 				'product_uom_qty': line.qty,
 				'name': self.name,
 				'location_id': source_location.id,
 				'location_dest_id': self.session_id.config_id.stock_location_id.id,
+				'picking_type_id': picking_type_id.id,
 				}
 			move_id = self.env['stock.move'].create(vals_move)
 		# creates refund
