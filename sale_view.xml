@@ -269,6 +269,7 @@
 				<group>
 		                         <field name="name" />
         	                	 <field name="date" />
+                         		 <field name="session_id" />
 				</group>
 				<group string="Origen">
 	        	                 <field name="partner_id" />
@@ -298,6 +299,7 @@
              <field name="arch" type="xml">
                  <tree string="PDV - Devoluciones">
                          <field name="name" />
+                         <field name="session_id" />
                          <field name="partner_id" />
                          <field name="origin_id" />
                          <field name="date" />

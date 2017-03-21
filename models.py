@@ -288,6 +288,7 @@ class pos_return(models.Model):
         date = fields.Date('Fecha',default=date.today())
 	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id')
 	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado')],default="draft")
+	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')],required=True)
 
 	@api.one
 	def confirm_refund(self):
