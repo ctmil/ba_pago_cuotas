@@ -305,6 +305,7 @@ class pos_return(models.Model):
 		for line in self.return_line:
 			amount = amount + line.price_subtotal
 		vals_statement_line = {
+			'name': 'Pago devolucion ' + self.name,
 			'journal_id': self.journal_id.id,
 			'statement_id': statement_id.id,
 			'amount': amount * (-1)
