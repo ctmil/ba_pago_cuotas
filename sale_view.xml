@@ -266,12 +266,14 @@
 				<field name="state" widget="statusbar"/>
 			</header>
 			<sheet>
-				<group>
+				<group col="4" colspan="4" string="General">
 		                         <field name="name" />
         	                	 <field name="date" />
                          		 <field name="session_id" />
+                         		 <field name="journal_id" />
+					 <field name="statement_id" />
 				</group>
-				<group string="Origen">
+				<group string="Origen" col="4" colspan="4">
 	        	                 <field name="partner_id" />
         	        	         <field name="origin_id" />
 				</group>

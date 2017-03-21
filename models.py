@@ -289,11 +289,30 @@ class pos_return(models.Model):
 	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id')
 	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado')],default="draft")
 	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')],required=True)
-
+	journal_id = fields.Many2one('account.journal',domain=[('journal_user','=',True)],required=True)
+	statement_id = fields.Many2one('account.bank.statement.line','Pago',readonly=True)
+	
 	@api.one
 	def confirm_refund(self):
+		# creates bank statement line
+		if not self.journal_id or not self.return_line:
+			raise ValidationError('Debe seleccionarse medio de pago y completar los productos')
+		statement_id = self.env['account.bank.statement'].search([('journal_id','=',self.journal_id.id),\
+				('pos_session_id','=',self.session_id.id)])
+		if not statement_id:
+			raise ValidationError('No existe medio de pago en la sesion de PDV')
+		amount = 0
+		for line in self.return_line:
+			amount = amount + line.price_subtotal
+		vals_statement_line = {
+			'journal_id': self.journal_id.id,
+			'statement_id': statement_id.id,
+			'amount': amount * (-1)
+			}	
+		statement_line_id = self.env['account.bank.statement.line'].create(vals_statement_line)
 		vals = {
-			'state': 'done'
+			'state': 'done',
+			'statement_id': statement_line_id.id,
 			}
 		self.write(vals)
 
