@@ -355,7 +355,7 @@ class pos_return(models.Model):
 		# prints refund
 		session = self.session_id
 		journal = session.config_id.journal_id
-		user = order.user_id
+		user = self.create_uid
 
 		if not journal.use_fiscal_printer:
 			raise ValidationError('You must set a fiscal printer for the journal')
@@ -376,16 +376,15 @@ class pos_return(models.Model):
 		if not partner:
                 	partner = journal.fiscal_printer_anon_partner_id
 
+
 		total_amount_w_tax = 0
 		total_amount = 0
 
-		for line in self.return_line:
-			total_amount = total_amount + line.price_subtotal
-			total_amount_w_tax = total_amount + line.price_subtotal_w_tax
-		if total_amount > 0:
-			tax_rate =total_amount_w_tax / total) - 1
-
-		user = self.env['res.users'].browse(self.create_uid)
+		#for line in self.return_line:
+		#	total_amount = total_amount + line.price_subtotal
+		#	total_amount_w_tax = total_amount + line.price_subtotal_w_tax
+		#if total_amount > 0:
+		#	tax_rate = (total_amount_w_tax / total_amount) - 1
 
 		ticket={
                 	"turist_ticket": False,
@@ -400,7 +399,8 @@ class pos_return(models.Model):
                 	    "document_number": partner.document_number,
 	                    "responsability": responsability_map.get(partner.responsability_id.code, "F"),
         	        },
-	                "related_document": self.name or _("No related doc"),
+	                #"related_document": self.name or _("No related doc"),
+	                "related_document": _("No picking"),
 	                "related_document_2": "",
         	        "turist_check": "",
                 	"lines": [ ],
@@ -438,18 +438,17 @@ class pos_return(models.Model):
                 	    #"unit_price": line['price_unit'],
 	                    "quantity": line.qty,
         	            "unit_price": line.price_unit,
-                	    "vat_rate": line.tax_rate, # TODO
+                	    "vat_rate": round(line.tax_rate,2), # TODO
 	                    "fixed_taxes": 0,
         	            "taxes_rate": 0
                 	})
-
 		for pay in self.statement_id:
                 	payment_journal = pay.journal_id
 	                ticket["payments"].append({
         	            "type": "pay",
                 	    "extra_description": "",
 	                    "description": payment_journal.name,
-        	            "amount": pay.amount,
+        	            "amount": pay.amount * (-1),
                 	})
 
                 ticket_resp = journal.make_fiscal_refund_ticket(ticket)
