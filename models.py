@@ -11,6 +11,8 @@ import datetime
 from openerp.fields import Date as newdate
 from datetime import datetime,date
 
+from openerp.addons.l10n_ar_fpoc.invoice import document_type_map, responsability_map
+
 #Get the logger
 _logger = logging.getLogger(__name__)
 
@@ -281,7 +283,6 @@ class pos_return(models.Model):
         _name = 'pos.return'
         _description = 'Devoluciones PDV'
 
-
         name = fields.Char('Nombre', readonly=True)
         partner_id = fields.Many2one('res.partner',string='Cliente', states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
         origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]", states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
@@ -351,6 +352,110 @@ class pos_return(models.Model):
 			}
 		self.write(vals)
 
+		# prints refund
+		session = self.session_id
+		journal = session.config_id.journal_id
+		user = order.user_id
+
+		if not journal.use_fiscal_printer:
+			raise ValidationError('You must set a fiscal printer for the journal')
+
+		if not journal.fiscal_printer_id:
+			raise ValidationError('You must set a fiscal printer for the journal')
+
+		if not journal.fiscal_printer_state in ['ready']:
+                	raise ValidationError('Printer is not ready to print.')
+
+		if not journal.fiscal_printer_fiscal_state in ['open']:
+                	raise ValidationError('You can\'t print in a closed printer.')
+
+		if not journal.fiscal_printer_anon_partner_id:
+                	raise ValidationError('You must set anonymous partner to the journal.')
+
+		partner = self.partner_id
+		if not partner:
+                	partner = journal.fiscal_printer_anon_partner_id
+
+		total_amount_w_tax = 0
+		total_amount = 0
+
+		for line in self.return_line:
+			total_amount = total_amount + line.price_subtotal
+			total_amount_w_tax = total_amount + line.price_subtotal_w_tax
+		if total_amount > 0:
+			tax_rate =total_amount_w_tax / total) - 1
+
+		user = self.env['res.users'].browse(self.create_uid)
+
+		ticket={
+                	"turist_ticket": False,
+	                "debit_note": False,
+        	        "partner": {
+                	    "name": partner.name,
+	                    "name_2": "",
+        	            "address": partner.street,
+                	    "address_2": partner.city,
+	                    "address_3": partner.country_id.name,
+        	            "document_type": document_type_map.get(partner.document_type_id.code, "D"),
+                	    "document_number": partner.document_number,
+	                    "responsability": responsability_map.get(partner.responsability_id.code, "F"),
+        	        },
+	                "related_document": self.name or _("No related doc"),
+	                "related_document_2": "",
+        	        "turist_check": "",
+                	"lines": [ ],
+	                "payments": [ ],
+        	        "cut_paper": True,
+                	"electronic_answer": False,
+	                "print_return_attribute": False,
+        	        "current_account_automatic_pay": False,
+                	"print_quantities": True,
+	                "tail_no": 1 if user.name else 0,
+        	        "tail_text": _("Saleman: %s") % user.name if user.name else "",
+                	"tail_no_2": 0,
+	                "tail_text_2": "",
+        	        "tail_no_3": 0,
+                	"tail_text_3": "",
+			"origin_document": self.origin_id.nro_factura or 'N/A'
+	            }
+       		#for op1, op2, line in data['lines']:
+		for line in self.return_line:
+                	product = line.product_id
+	                ticket["lines"].append({
+        	            "item_action": "sale_item",
+                	    "as_gross": False,
+	                    "send_subtotal": True,
+        	            "check_item": False,
+                	    "collect_type": "q",
+	                    "large_label": "",
+        	            "first_line_label": "",
+                	    "description": "",
+	                    "description_2": "",
+        	            "description_3": "",
+                	    "description_4": "",
+	                    "item_description": product.name,
+        	            #"quantity": line['qty'],
+                	    #"unit_price": line['price_unit'],
+	                    "quantity": line.qty,
+        	            "unit_price": line.price_unit,
+                	    "vat_rate": line.tax_rate, # TODO
+	                    "fixed_taxes": 0,
+        	            "taxes_rate": 0
+                	})
+
+		for pay in self.statement_id:
+                	payment_journal = pay.journal_id
+	                ticket["payments"].append({
+        	            "type": "pay",
+                	    "extra_description": "",
+	                    "description": payment_journal.name,
+        	            "amount": pay.amount,
+                	})
+
+                ticket_resp = journal.make_fiscal_refund_ticket(ticket)
+
+
+
 	@api.one
 	def fill_products(self):
 		for line in self.return_line:
@@ -364,6 +469,7 @@ class pos_return(models.Model):
 					'qty': line.qty,
 					'price_unit': line.price_unit,
 					'price_subtotal': line.price_subtotal,
+					'price_subtotal_w_tax': line.price_subtotal_incl,
 					}
 				return_id = self.env['pos.return.line'].create(vals)
 
@@ -371,9 +477,16 @@ class pos_return_line(models.Model):
 	_name = 'pos.return.line'
 	_description = 'Linea Devolucion PDV'
 
+	@api.one
+	def _compute_tax_rate(self):
+		if self.price_subtotal > 0:
+			self.tax_rate = (self.price_subtotal_w_tax / self.price_subtotal) - 1
+
 	return_id = fields.Many2one('pos.return')
 	origin_id = fields.Many2one('pos.order')
 	product_id = fields.Many2one('product.product',string='Producto')
 	qty  = fields.Float('Cantidad')
 	price_unit = fields.Float('Precio Unitario')
-	price_subtotal = fields.Float('Subtotal (c/impuestos)')
+	price_subtotal = fields.Float('Subtotal (s/impuestos)')
+	price_subtotal_w_tax = fields.Float('Subtotal (c/impuestos)')
+	tax_rate = fields.Float('% Tax',compute=_compute_tax_rate)

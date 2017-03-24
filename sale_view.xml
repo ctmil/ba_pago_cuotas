@@ -290,6 +290,8 @@
 					                         <field name="qty" />
 					                         <field name="price_unit" />
 						                <field name="price_subtotal" />
+						                <field name="price_subtotal_w_tax" />
+						                <field name="tax_rate" />
 							</tree>
 						</field>
 					</page>
