@@ -338,9 +338,10 @@ class pos_return(models.Model):
 
 		vals_invoice = {
 			'date_invoice': self.date,
-			'partner_id': self.partner_id,
+			'partner_id': self.partner_id.id,
 			'journal_id': journal_id.id,
 			'origin': self.origin_id.nro_factura or 'N/A',
+			'account_id': self.partner_id.property_account_receivable.id
 			}
 		invoice_id = self.env['account.invoice'].create(vals_invoice)
 
@@ -367,7 +368,8 @@ class pos_return(models.Model):
 				'product_id': line.product_id.id,
 				'name': line.product_id.name,
 				'quantity': line.qty,
-				'price_unit': line.price_unit
+				'price_unit': line.price_unit,
+				'account_id': line.product_id.property_account_income.id
 				}
 			line_id = self.env['account.invoice.line'].create(vals_invoice_line)
 
