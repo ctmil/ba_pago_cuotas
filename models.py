@@ -20,6 +20,7 @@ class account_journal(models.Model):
     _inherit = 'account.journal'
 
     is_credit_card = fields.Boolean(string='Es tarjeta de crédito')
+    is_cta_cte = fields.Boolean(string='Es cta cte')
 
 class account_bank_statement_line(models.Model):
     _inherit = 'account.bank.statement.line'
@@ -285,13 +286,13 @@ class pos_return(models.Model):
         _description = 'Devoluciones PDV'
 
         name = fields.Char('Nombre', readonly=True)
-        partner_id = fields.Many2one('res.partner',string='Cliente', states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
-        origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]", states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
+        partner_id = fields.Many2one('res.partner',string='Cliente', states={'done':[('readonly', True)], 'draft':[('readonly',False)], 'used':[('used',True)]})
+        origin_id = fields.Many2one('pos.order',domain="[('partner_id','=',partner_id)]", states={'done':[('readonly', True)], 'draft':[('readonly',False)], 'used':[('used',True)]})
         date = fields.Date('Fecha',default=date.today(),readonly=True)
-	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id', states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
-	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado')],default="draft")
-	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')],required=True, states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
-	journal_id = fields.Many2one('account.journal',domain=[('journal_user','=',True)],required=True, states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
+	return_line = fields.One2many(comodel_name='pos.return.line',inverse_name='return_id', states={'done':[('readonly', True)], 'draft':[('readonly',False)], 'used':[('used',True)]})
+	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado'),('used','Consumido')],default="draft")
+	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')],required=True, states={'done':[('readonly', True)], 'draft':[('readonly',False)], 'used':[('used',True)]})
+	journal_id = fields.Many2one('account.journal',domain=[('journal_user','=',True)],required=True, states={'done':[('readonly', True)], 'draft':[('readonly',False)], 'used':[('used',True)]})
 	statement_id = fields.Many2one('account.bank.statement.line','Pago',readonly=True)
 	picking_id = fields.Many2one('stock.picking',string='Remito',readonly=True)
 	invoice_id = fields.Many2one('account.invoice',string='Nota de Crédito')
@@ -309,13 +310,16 @@ class pos_return(models.Model):
 		amount = 0
 		for line in self.return_line:
 			amount = amount + line.price_subtotal
-		vals_statement_line = {
-			'name': 'Pago devolucion ' + my_sequence,
-			'journal_id': self.journal_id.id,
-			'statement_id': statement_id.id,
-			'amount': amount * (-1)
-			}	
-		statement_line_id = self.env['account.bank.statement.line'].create(vals_statement_line)
+		if not statement_id.journal_id.is_cta_cte:
+			vals_statement_line = {
+				'name': 'Pago devolucion ' + my_sequence,
+				'journal_id': self.journal_id.id,
+				'statement_id': statement_id.id,
+				'amount': amount * (-1)
+				}	
+			statement_line_id = self.env['account.bank.statement.line'].create(vals_statement_line)
+		else:
+			statement_line_id = None
 		# creates picking
 		picking_type_id = self.env['stock.picking.type'].search([('code','=','incoming')])
 		vals_picking = {
@@ -328,20 +332,20 @@ class pos_return(models.Model):
 		# searches for journal
 		journal_id = None
 		journal_ids = self.env['pos.config.journal'].search([('responsability_id','=',self.partner_id.responsability_id.id)])
-		# import pdb;pdb.set_trace()
 		for journal in journal_ids:
 			if journal.journal_type == 'sale_refund' and  self.session_id.config_id.id == journal.config_id.id:
 				journal_id = journal
 				break
 		if not journal_id:
 			raise ValidationError('No hay journal definido para las devoluciones')
-
+		#import pdb;pdb.set_trace()
 		vals_invoice = {
 			'date_invoice': self.date,
 			'partner_id': self.partner_id.id,
-			'journal_id': journal_id.id,
+			'journal_id': journal_id.journal_id.id,
 			'origin': self.origin_id.nro_factura or 'N/A',
-			'account_id': self.partner_id.property_account_receivable.id
+			'account_id': self.partner_id.property_account_receivable.id,
+			'type': 'out_refund'
 			}
 		invoice_id = self.env['account.invoice'].create(vals_invoice)
 
@@ -362,16 +366,19 @@ class pos_return(models.Model):
 				'picking_type_id': picking_type_id.id,
 				}
 			move_id = self.env['stock.move'].create(vals_move)
-		
+	
 			vals_invoice_line = {
 				'invoice_id': invoice_id.id,
 				'product_id': line.product_id.id,
 				'name': line.product_id.name,
 				'quantity': line.qty,
 				'price_unit': line.price_unit,
-				'account_id': line.product_id.property_account_income.id
+				'account_id': line.product_id.property_account_income.id,
+				'invoice_line_tax_id': [(6,0,line.product_id.taxes_id.ids)]
 				}
 			line_id = self.env['account.invoice.line'].create(vals_invoice_line)
+		
+		invoice_id.signal_workflow('invoice_open')
 
                 picking_id.action_confirm()
                 picking_id.force_assign()
@@ -486,7 +493,7 @@ class pos_return(models.Model):
         	            "amount": pay.amount * (-1),
                 	})
 
-                # ticket_resp = journal.make_fiscal_refund_ticket(ticket)
+                ticket_resp = journal.make_fiscal_refund_ticket(ticket)
 
 
 

@@ -2,6 +2,9 @@
 <openerp>
     <data>
 
+
+
+
         <record id="sale_cuotas_form_view" model="ir.ui.view">
             <field name="name">sale.cuotas.form.view</field>
             <field name="model">sale.cuotas</field>
@@ -119,6 +122,17 @@
             parent="menu_ba_sales_config" 
         action="action_ba_cuotas_edit"
         sequence="1"/>
+
+        <record id="view_account_journal_pos_user_form_ba" model="ir.ui.view">
+            <field name="name">view.account.journal.pos.user.form.ba</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="point_of_sale.view_account_journal_pos_user_form"/>
+            <field name="arch" type="xml">
+                  <field name="amount_authorized_diff" position="after">
+			<field name="is_cta_cte" string="Es cta cte" />
+		  </field>
+            </field>
+        </record>
 
         <record id="view_sale_order_form_ba" model="ir.ui.view">
             <field name="name">sale.order.form.ba</field>
