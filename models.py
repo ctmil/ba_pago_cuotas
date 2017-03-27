@@ -238,6 +238,7 @@ class pos_order(models.Model):
 
     nro_factura = fields.Char(string='Nro Factura',compute=_compute_nro_factura)
     installment_ids = fields.One2many(comodel_name='pos.order.installment',inverse_name='order_id')
+    return_ids = fields.One2many(comodel_name='pos.return',inverse_name='origin_id')
 
 class pos_session(models.Model):
     _inherit = 'pos.session'
@@ -293,6 +294,7 @@ class pos_return(models.Model):
 	journal_id = fields.Many2one('account.journal',domain=[('journal_user','=',True)],required=True, states={'done':[('readonly', True)], 'draft':[('readonly',False)]})
 	statement_id = fields.Many2one('account.bank.statement.line','Pago',readonly=True)
 	picking_id = fields.Many2one('stock.picking',string='Remito',readonly=True)
+	invoice_id = fields.Many2one('account.invoice',string='Nota de Crédito')
 	
 	@api.one
 	def confirm_refund(self):
@@ -322,6 +324,26 @@ class pos_return(models.Model):
 			'origin': my_sequence,
 			'picking_type_id': picking_type_id.id,
 			}
+
+		# searches for journal
+		journal_id = None
+		journal_ids = self.env['pos.config.journal'].search([('responsability_id','=',self.partner_id.responsability_id.id)])
+		# import pdb;pdb.set_trace()
+		for journal in journal_ids:
+			if journal.journal_type == 'sale_refund' and  self.session_id.config_id.id == journal.config_id.id:
+				journal_id = journal
+				break
+		if not journal_id:
+			raise ValidationError('No hay journal definido para las devoluciones')
+
+		vals_invoice = {
+			'date_invoice': self.date,
+			'partner_id': self.partner_id,
+			'journal_id': journal_id.id,
+			'origin': self.origin_id.nro_factura or 'N/A',
+			}
+		invoice_id = self.env['account.invoice'].create(vals_invoice)
+
 		picking_id = self.env['stock.picking'].create(vals_picking)
 		source_location = self.env['stock.location'].search([('usage','=','customer')])
 		if not source_location:
@@ -339,6 +361,16 @@ class pos_return(models.Model):
 				'picking_type_id': picking_type_id.id,
 				}
 			move_id = self.env['stock.move'].create(vals_move)
+		
+			vals_invoice_line = {
+				'invoice_id': invoice_id.id,
+				'product_id': line.product_id.id,
+				'name': line.product_id.name,
+				'quantity': line.qty,
+				'price_unit': line.price_unit
+				}
+			line_id = self.env['account.invoice.line'].create(vals_invoice_line)
+
                 picking_id.action_confirm()
                 picking_id.force_assign()
                 picking_id.action_done()
@@ -349,6 +381,7 @@ class pos_return(models.Model):
 			'picking_id': picking_id.id,
 			'state': 'done',
 			'statement_id': statement_line_id.id,
+			'invoice_id': invoice_id.id,
 			}
 		self.write(vals)
 
@@ -451,7 +484,7 @@ class pos_return(models.Model):
         	            "amount": pay.amount * (-1),
                 	})
 
-                ticket_resp = journal.make_fiscal_refund_ticket(ticket)
+                # ticket_resp = journal.make_fiscal_refund_ticket(ticket)
 
 
 
