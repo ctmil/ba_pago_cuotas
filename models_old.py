@@ -74,6 +74,22 @@ class pos_session(osv.osv):
 
 pos_session()
 
+class account_bank_statement_line(osv.osv):
+	_inherit = 'account.bank.statement.line'
+
+	def unlink(self, cr, uid, ids, context=None):
+		for stmt_id in ids:
+			bank_stmt_line = self.pool.get('account.bank.statement.line').browse(cr,uid,stmt_id)
+			if bank_stmt_line.return_id:
+				vals = {
+					'state': 'done'
+					}
+				return_id = self.pool.get('pos.return').write(cr,uid,bank_stmt_line.return_id.id,vals)
+		return super(account_bank_statement_line, self).unlink(cr,uid,ids,context)
+
+account_bank_statement_line()
+
+
 class pos_order(osv.osv):
 	_inherit = 'pos.order'
 
@@ -118,7 +134,7 @@ class pos_make_payment(osv.osv_memory):
 			nro_cupon = data.get('nro_cupon',False)
 			if not cuotas_id or not nro_cupon or not nro_tarjeta:
 				raise osv.except_osv(_('Error!'), _('Debe ingresar informacion del cupon/tarjeta!'))
-
+		
 		if data['cuotas_id']:
 			cuotas = self.pool.get('sale.cuotas').browse(cr,uid,data['cuotas_id'][0])
 			if cuotas:
@@ -169,6 +185,22 @@ class pos_make_payment(osv.osv_memory):
 						'monto_interes': monto_interes
 						}
 					return_id = self.pool.get('pos.order.installment').create(cr,uid,vals_cuotas)				
+		return_id = data.get('return_id',None)
+		if return_id:
+			statement_id = self.pool.get('account.bank.statement.line').\
+				search(cr,uid,[('pos_statement_id','=',context['active_id']),\
+					('journal_id','=',data['journal_id'][0])],order='id desc',limit=1)
+			if statement_id:
+				vals = {
+					'return_id': return_id[0]
+					}
+				ret_id = self.pool.get('account.bank.statement.line').write(cr,uid,statement_id,vals)
+				vals_return = {
+					'state': 'used'
+					}
+				return_move = self.pool.get('pos.return').write(cr,uid,return_id[0],vals_return)
+
+			
 		if order.test_paid():
 			if order.sale_journal.type == 'sale':
 				# Creates invoice

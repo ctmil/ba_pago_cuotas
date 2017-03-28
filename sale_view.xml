@@ -153,6 +153,7 @@
 			<field name="is_credit_card" invisible="1"/>
 			<field name="is_cta_cte" invisible="1"/>
 			<field name="partner_id" invisible="1"/>
+			<field name="order_id" invisible="1"/>
 			<field name="cuotas_id" 
 				domain="[('journal_id','=',journal_id)]"
 				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
@@ -203,6 +204,7 @@
 		<field name="statement_id" position="after">
 			<field name="nro_cupon" />
 			<field name="nro_tarjeta" />
+			<field name="return_id" />
 		</field>
 		<field name="statement_ids" position="after">
 			<group string="Devoluciones">
@@ -341,6 +343,7 @@
                          <field name="partner_id" />
                          <field name="origin_id" />
                          <field name="date" />
+                         <field name="amount_total" />
                          <field name="state" />
                  </tree>
              </field>

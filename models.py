@@ -29,6 +29,7 @@ class account_bank_statement_line(models.Model):
     nro_cupon = fields.Char('Nro cupon')
     nro_tarjeta = fields.Char('Nro tarjeta')
     installment_ids = fields.One2many(comodel_name='pos.order.installment',inverse_name='statement_line_id')    
+    return_id = fields.Many2one('pos.return')
 
 class pos_order_installment(models.Model):
     _name = 'pos.order.installment'
@@ -104,19 +105,19 @@ class pos_make_payment(models.TransientModel):
     return_id = fields.Many2one('pos.return',string='Devolución')
     amount_total = fields.Float('monto orden original') 
     partner_id = fields.Many2one('res.partner',string='Cliente')
-
+    order_id = fields.Many2one('pos.order',string='Pedido')
 
     @api.onchange('return_id')
     def change_return_id(self):
-	if self.return_id.amount_total > self.amount_total:
+	if self.return_id.amount_total > self.order_id.amount_total:
 		raise ValidationError('El monto de la devolución es mayor al monto del pedido')
 	else:
 		self.amount = self.return_id.amount_total
 
-    @api.onchange('amount')
-    def check_amount(self):
-	if self.amount > self.return_id.amount_total:
-		raise ValidationError('El monto ingresado es mayor al monto de la devolución')
+    #@api.onchange('amount')
+    #def check_amount(self):
+	#if self.amount > self.return_id.amount_total:
+	#	raise ValidationError('El monto ingresado es mayor al monto de la devolución')
  
     @api.onchange('cuotas_id')
     def change_cuotas_id(self):
@@ -266,7 +267,7 @@ class pos_order(models.Model):
         vals = {
 	    'journal_id': journal_id.id,
             'partner_id': self.partner_id.id,
-            'amount_total': self.amount_total,
+            'order_id': self.id,
             }
         wizard = self.env['pos.make.payment'].create(vals)    
         if wizard:
@@ -332,6 +333,14 @@ class pos_return(models.Model):
         _name = 'pos.return'
         _description = 'Devoluciones PDV'
 
+	@api.one
+	def _compute_amount_total(self):
+		return_value = 0
+		for line in self.return_line:
+			return_value = return_value + line.price_subtotal_w_tax
+		self.amount_total = return_value
+
+	amount_total = fields.Float('monto total',compute=_compute_amount_total)
         name = fields.Char('Nombre', readonly=True)
 	state = fields.Selection(selection=[('draft','Borrador'),('done','Confirmado'),('used','Consumido')],default="draft")
         partner_id = fields.Many2one('res.partner',string='Cliente', states={'done':[('readonly', True)], 'draft':[('readonly',False)], 'used':[('readonly',True)]})
@@ -385,7 +394,6 @@ class pos_return(models.Model):
 				break
 		if not journal_id:
 			raise ValidationError('No hay journal definido para las devoluciones')
-		#import pdb;pdb.set_trace()
 		vals_invoice = {
 			'date_invoice': self.date,
 			'partner_id': self.partner_id.id,
