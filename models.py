@@ -100,7 +100,24 @@ class pos_make_payment(models.TransientModel):
     journal_id = fields.Many2one('account.journal',string='Payment Mode',required=True,domain=[('journal_user','=',True)])
     cuotas_id = fields.Many2one('sale.cuotas',string='Plan de cuotas')    
     is_credit_card = fields.Boolean(string='Es tarjeta de crédito',related='journal_id.is_credit_card')
-    
+    is_cta_cte = fields.Boolean(string='Es cta.cte.',related='journal_id.is_cta_cte')
+    return_id = fields.Many2one('pos.return',string='Devolución')
+    amount_total = fields.Float('monto orden original') 
+    partner_id = fields.Many2one('res.partner',string='Cliente')
+
+
+    @api.onchange('return_id')
+    def change_return_id(self):
+	if self.return_id.amount_total > self.amount_total:
+		raise ValidationError('El monto de la devolución es mayor al monto del pedido')
+	else:
+		self.amount = self.return_id.amount_total
+
+    @api.onchange('amount')
+    def check_amount(self):
+	if self.amount > self.return_id.amount_total:
+		raise ValidationError('El monto ingresado es mayor al monto de la devolución')
+ 
     @api.onchange('cuotas_id')
     def change_cuotas_id(self):
         if self.cuotas_id:
@@ -236,6 +253,36 @@ class pos_order(models.Model):
         if self.invoice_id:
             return_value = self.invoice_id.number
         self.nro_factura = return_value
+
+    @api.multi
+    def pay_order(self):
+	self.ensure_one()
+	if not self.partner_id:
+		raise ValidationError('Debe ingresar el cliente')
+	if self.session_id.config_id.journal_ids:
+		journal_id = self.session_id.config_id.journal_ids[0]
+	else:	
+		raise ValidationError('No hay método de pago seleccionado para la sesión')
+        vals = {
+	    'journal_id': journal_id.id,
+            'partner_id': self.partner_id.id,
+            'amount_total': self.amount_total,
+            }
+        wizard = self.env['pos.make.payment'].create(vals)    
+        if wizard:
+            wizard_id = wizard.id
+            res = {
+                "name": "pos.make.payment."+str(wizard_id),
+                "type": "ir.actions.act_window",
+                "res_model": "pos.make.payment",
+                "view_type": "form",
+                "view_mode": "form",
+                #"view_id": "product.product_supplierinfo_form_view",
+                "res_id": wizard_id,
+                "target": "new",
+                "nodestroy": True,
+                }
+            return res
 
     nro_factura = fields.Char(string='Nro Factura',compute=_compute_nro_factura)
     installment_ids = fields.One2many(comodel_name='pos.order.installment',inverse_name='order_id')

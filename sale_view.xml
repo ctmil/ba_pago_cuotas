@@ -151,9 +151,14 @@
             <field name="arch" type="xml">
 		<field name="journal_id" position="after">
 			<field name="is_credit_card" invisible="1"/>
+			<field name="is_cta_cte" invisible="1"/>
+			<field name="partner_id" invisible="1"/>
 			<field name="cuotas_id" 
 				domain="[('journal_id','=',journal_id)]"
 				attrs="{'invisible':[('is_credit_card', '=', False)]}"/>
+			<field name="return_id" 
+				domain="[('partner_id','=',partner_id),('state','=','done')]"
+				attrs="{'invisible':[('is_cta_cte', '=', False)]}"/>
 		</field>
                 <field name="amount" position="after" >
 			<group col="6" colspan="4" string="Información Tarjeta de Crédito"
@@ -189,6 +194,12 @@
             <field name="model">pos.order</field>
             <field name="inherit_id" ref="point_of_sale.view_pos_pos_form"/>
             <field name="arch" type="xml">
+		<button name="%(point_of_sale.action_pos_payment)d" string="Payment" position="attributes">
+			<attribute name="invisible">1</attribute>
+		</button>
+		<button name="%(point_of_sale.action_pos_payment)d" string="Payment" position="after">
+			<button name="pay_order" type="object" string="Registrar Pagos" states="draft" context="{'pos_session_id' : session_id}"/>
+		</button>
 		<field name="statement_id" position="after">
 			<field name="nro_cupon" />
 			<field name="nro_tarjeta" />

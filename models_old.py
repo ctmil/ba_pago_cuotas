@@ -99,7 +99,8 @@ class pos_make_payment(osv.osv_memory):
 		'total_amount': fields.float('Monto total con recargos')
 		}
 
-	def check(self, cr, uid, ids, context=None):
+
+	def check(self, cr,uid, ids, context=None):
 		context = context or {}
 	        order_obj = self.pool.get('pos.order')
         	active_id = context and context.get('active_id', False)
