@@ -333,6 +333,16 @@ class pos_return(models.Model):
         _name = 'pos.return'
         _description = 'Devoluciones PDV'
 
+
+	@api.multi
+	def name_get(self):
+		result = []
+        	for ret in self:
+	        	result.append((ret.id, "%s $%d" % (ret.name, ret.amount_total)))
+        	return result
+
+
+
 	@api.one
 	def _compute_amount_total(self):
 		return_value = 0
