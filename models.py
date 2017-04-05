@@ -428,7 +428,7 @@ class pos_return(models.Model):
 				'name': my_sequence,
 				'location_id': source_location.id,
 				'location_dest_id': self.session_id.config_id.stock_location_id.id,
-				'picking_type_id': picking_type_id.id,
+				'picking_type_id': picking_type_id[0].id,
 				}
 			move_id = self.env['stock.move'].create(vals_move)
 	
