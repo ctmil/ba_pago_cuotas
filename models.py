@@ -392,7 +392,7 @@ class pos_return(models.Model):
 			'partner_id': self.partner_id.id,
 			'date': self.date,
 			'origin': my_sequence,
-			'picking_type_id': picking_type_id.id,
+			'picking_type_id': picking_type_id.id[0],
 			}
 
 		# searches for journal
