@@ -16,6 +16,15 @@ from openerp.addons.l10n_ar_fpoc.invoice import document_type_map, responsabilit
 #Get the logger
 _logger = logging.getLogger(__name__)
 
+class pos_order_line(models.Model):
+    _inherit = 'pos.order.line'
+
+    @api.one
+    def _compute_price_unit_w_taxes(self):
+	self.price_unit_w_taxes = self.price_unit * 1.21
+
+    price_unit_w_taxes = fields.Monetary(string='Precio c/IVA',compute=_compute_price_unit_w_taxes)
+
 class account_journal(models.Model):
     _inherit = 'account.journal'
 

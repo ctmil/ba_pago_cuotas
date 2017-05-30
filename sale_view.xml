@@ -2,8 +2,7 @@
 <openerp>
     <data>
 
-
-
+	<delete model="ir.ui.menu" id="point_of_sale.menu_pos_session_opening" />
 
         <record id="sale_cuotas_form_view" model="ir.ui.view">
             <field name="name">sale.cuotas.form.view</field>
@@ -225,6 +224,12 @@
 				</tree>
 			</field>
 		</field>
+		<field  name="price_unit" position="attributes">
+			<attribute name="readonly">1</attribute>
+		</field>
+		<field  name="price_unit" position="after">
+			<field name="price_unit_w_taxes" />
+		</field>
             </field>
         </record>
 
@@ -260,6 +265,9 @@
             <field name="model">pos.session</field>
             <field name="inherit_id" ref="point_of_sale.view_pos_session_form"/>
             <field name="arch" type="xml">
+		  <button class="oe_highlight" name="open_frontend_cb" position="attributes">
+			<attribute name="invisible">1</attribute>
+		  </button>
                   <button class="oe_stat_button" name="%(point_of_sale.action_pos_box_in)d" position="attributes">
 			<attribute name="invisible">1</attribute>
 		  </button>
