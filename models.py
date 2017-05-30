@@ -23,7 +23,7 @@ class pos_order_line(models.Model):
     def _compute_price_unit_w_taxes(self):
 	self.price_unit_w_taxes = self.price_unit * 1.21
 
-    price_unit_w_taxes = fields.Monetary(string='Precio c/IVA',compute=_compute_price_unit_w_taxes)
+    price_unit_w_taxes = fields.Float(string='Precio c/IVA',compute=_compute_price_unit_w_taxes)
 
 class account_journal(models.Model):
     _inherit = 'account.journal'

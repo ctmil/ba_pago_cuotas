@@ -198,7 +198,7 @@
 			<attribute name="invisible">1</attribute>
 		</button>
 		<button name="%(point_of_sale.action_pos_payment)d" string="Payment" position="after">
-			<button name="pay_order" type="object" string="Registrar Pagos" states="draft" context="{'pos_session_id' : session_id}"/>
+			<button name="pay_order" type="object" string="Registrar Pagos" states="draft" context="{'pos_session_id' : session_id,'active_id': id}"/>
 		</button>
 		<field name="statement_id" position="after">
 			<field name="nro_cupon" />
@@ -225,7 +225,7 @@
 			</field>
 		</field>
 		<field  name="price_unit" position="attributes">
-			<attribute name="readonly">1</attribute>
+			<attribute name="invisible">1</attribute>
 		</field>
 		<field  name="price_unit" position="after">
 			<field name="price_unit_w_taxes" />
@@ -276,6 +276,8 @@
 		  </button>
 		  <button name="close" position="after">
 			<button name="bank_deposit" string="Depositar en Banco" 
+				type="object" states="opened"/>
+			<button name="transfer_cashbox" string="Transferir a Cajas" 
 				type="object" states="opened"/>
 		  </button>
 		  <field name="statement_ids" position="after">
