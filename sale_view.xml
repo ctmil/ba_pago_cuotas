@@ -298,7 +298,7 @@
                         	        <field name="name" readonly="1"/>
 	                                <field name="date" readonly="1"/>
         	                        <field name="user_id" readonly="1"/>
-                        	        <!-- field name="statement_line_id" readonly="1"/ -->
+                        	        <field name="statement_line_id" readonly="1"/>
 	                                <field name="amount" readonly="1"/>
                         	    </tree>
 	                   </field>

@@ -25,6 +25,7 @@ class pos_session_transfer(models.Model):
         session_id = fields.Many2one('pos.session')
         date = fields.Date('Fecha')
         amount = fields.Float('Monto')
+	statement_line_id = fields.Many2one('account.bank.statement.line',string='Medio de pago')
 
 
 

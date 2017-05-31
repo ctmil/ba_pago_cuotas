@@ -22,18 +22,33 @@ class cash_register_transfer_wizard(models.TransientModel):
 		credit_account = session.config_id.cash_journal.default_debit_account_id
 		if self.amount > credit_account.balance:
 			raise ValidationError('El monto ingresado no puede superar el saldo de la caja')
+		vals = {}
+		for statement in session.statement_ids:
+			if statement.journal_id.id == session.config_id.cash_journal.id:
+				vals = {
+					'statement_id': statement.id,
+					'ref': 'Deposito ' + session.name,
+					'name': 'Deposito ' + session.name,
+					'amount': self.amount * (-1),
+					'date': str(date.today()),
+					}
+		if not vals:
+			raise ValidationError('Problemas en la configuración de la sesión')
+		if vals:
+			statement_line = self.env['account.bank.statement.line'].create(vals)		
 		vals = {
 			'name': self.name,
 			'user_id': self.user_id.id,
 			'session_id': self.session_id.id,
 			'date': self.date,
+			'statement_line_id': statement_line.id,
 			'amount': self.amount
 			}
 		return_id = self.env['pos.session.transfer'].create(vals)
 	
 	name = fields.Char('Nombre')
 	user_id = fields.Many2one('res.users')
-	session_id = fields.Many2one('pos.session')
+	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')])
 	date = fields.Date('Fecha')
 	amount = fields.Float('Monto')
 
