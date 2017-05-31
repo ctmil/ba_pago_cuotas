@@ -16,6 +16,18 @@ from openerp.addons.l10n_ar_fpoc.invoice import document_type_map, responsabilit
 #Get the logger
 _logger = logging.getLogger(__name__)
 
+class pos_session_transfer(models.Model):
+	_name = 'pos.session.transfer'
+	_description = 'pos.session.transfer'
+
+        name = fields.Char('Nombre')
+        user_id = fields.Many2one('res.users')
+        session_id = fields.Many2one('pos.session')
+        date = fields.Date('Fecha')
+        amount = fields.Float('Monto')
+
+
+
 class pos_order_line(models.Model):
     _inherit = 'pos.order.line'
 
@@ -302,6 +314,29 @@ class pos_session(models.Model):
     _inherit = 'pos.session'
 
     @api.multi
+    def transfer_cash_register(self):
+        user_id = self.env.context['uid']
+        vals = {
+            'user_id': user_id,
+            'session_id': self.id,
+            'date': str(date.today())
+            }
+        wizard = self.env['cash.register.transfer.wizard'].create(vals)    
+        if wizard:
+            wizard_id = wizard.id
+            res = {
+                "name": "cash.register."+str(wizard_id),
+                "type": "ir.actions.act_window",
+                "res_model": "cash.register.transfer.wizard",
+                "view_type": "form",
+                "view_mode": "form",
+                "res_id": wizard_id,
+                "target": "new",
+                "nodestroy": True,
+                }
+            return res
+
+    @api.multi
     def bank_deposit(self):
         user_id = self.env.context['uid']
         vals = {
@@ -326,6 +361,7 @@ class pos_session(models.Model):
             return res
 
     deposit_ids = fields.One2many(comodel_name='pos.session.deposit',inverse_name='session_id')
+    transfer_ids = fields.One2many(comodel_name='pos.session.transfer',inverse_name='session_id')
 
 class pos_session_deposit(models.Model):
 	_name = 'pos.session.deposit'

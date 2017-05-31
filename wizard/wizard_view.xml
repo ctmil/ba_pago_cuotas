@@ -1,6 +1,23 @@
 <openerp>
 	<data>
 
+		<record id="ba_transfer_cash_register" model="ir.ui.view">
+			<field name="name">Transferir Efectivo a Otra Caja</field>
+			<field name="model">cash.register.transfer.wizard</field>
+			<field name="arch" type="xml">
+				<form string="Transferir Efectivo a Otra Caja">
+					<group string="Transferencia">
+						<field name="name" />
+						<field name="date" />
+						<field name="user_id" />
+						<field name="session_id" />
+						<field name="amount" />
+					</group>
+					<button name="transfer_cash_register" type="object" string="Transferir" /> 
+				</form>
+			</field>
+		</record>
+
 		<record id="ba_bank_deposit_pdv" model="ir.ui.view">
 			<field name="name">Depositar efectivo</field>
 			<field name="model">bank.deposit.pdv</field>

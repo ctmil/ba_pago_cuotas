@@ -12,6 +12,31 @@ import ast
 #Get the logger
 _logger = logging.getLogger(__name__)
 
+class cash_register_transfer_wizard(models.TransientModel):
+	_name = 'cash.register.transfer.wizard'
+
+	@api.multi
+	def transfer_cash_register(self):
+		session = self.session_id
+		credit_account_id = session.config_id.cash_journal.default_debit_account_id.id
+		credit_account = session.config_id.cash_journal.default_debit_account_id
+		if self.amount > credit_account.balance:
+			raise ValidationError('El monto ingresado no puede superar el saldo de la caja')
+		vals = {
+			'name': self.name,
+			'user_id': self.user_id.id,
+			'session_id': self.session_id.id,
+			'date': self.date,
+			'amount': self.amount
+			}
+		return_id = self.env['pos.session.transfer'].create(vals)
+	
+	name = fields.Char('Nombre')
+	user_id = fields.Many2one('res.users')
+	session_id = fields.Many2one('pos.session')
+	date = fields.Date('Fecha')
+	amount = fields.Float('Monto')
+
 class bank_deposit_pdv(models.TransientModel):
 	_name = 'bank.deposit.pdv'
 
