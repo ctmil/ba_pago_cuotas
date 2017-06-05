@@ -17,12 +17,26 @@ class cash_register_transfer_wizard(models.TransientModel):
 
 	@api.multi
 	def transfer_cash_register(self):
+		#if self.session_id.id == self.destination_session_id.id:
+		#	raise ValidationError('La caja destino no puede ser igual a la caja origen')
 		session = self.session_id
+		destination_session = self.destination_session_id
 		credit_account_id = session.config_id.cash_journal.default_debit_account_id.id
 		credit_account = session.config_id.cash_journal.default_debit_account_id
 		if self.amount > credit_account.balance:
 			raise ValidationError('El monto ingresado no puede superar el saldo de la caja')
 		vals = {}
+		for dest_statement in destination_session.statement_ids:
+			if dest_statement.journal_id.id == destination_session.config_id.cash_journal.id:
+				vals_destination = {
+					'statement_id': dest_statement.id,
+					'ref': 'Rec.Deposito ' + session.name,
+					'name': 'Rec.Deposito ' + destination_session.name,
+					'amount': self.amount,
+					'date': str(date.today()),
+					}
+		if vals_destination:
+			statement_line = self.env['account.bank.statement.line'].create(vals_destination)		
 		for statement in session.statement_ids:
 			if statement.journal_id.id == session.config_id.cash_journal.id:
 				vals = {
@@ -49,6 +63,7 @@ class cash_register_transfer_wizard(models.TransientModel):
 	name = fields.Char('Nombre')
 	user_id = fields.Many2one('res.users')
 	session_id = fields.Many2one('pos.session',domain=[('state','=','opened')])
+	destination_session_id = fields.Many2one('pos.session',string='Caja Destino',domain=[('state','=','opened')])
 	date = fields.Date('Fecha')
 	amount = fields.Float('Monto')
 
