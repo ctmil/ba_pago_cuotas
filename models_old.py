@@ -89,6 +89,26 @@ class account_bank_statement_line(osv.osv):
 
 account_bank_statement_line()
 
+class pos_order_line(osv.osv):
+	_inherit = 'pos.order.line'
+
+	def onchange_qty(self, cr, uid, ids, product, discount, qty, price_unit, context=None):
+	        result = {}
+        	if not product:
+	            return result
+        	account_tax_obj = self.pool.get('account.tax')
+	        cur_obj = self.pool.get('res.currency')
+
+        	prod = self.pool.get('product.product').browse(cr, uid, product, context=context)
+
+	        price = price_unit * (1 - (discount or 0.0) / 100.0)
+        	taxes = account_tax_obj.compute_all(cr, uid, prod.taxes_id, price, qty, product=prod, partner=False)
+
+	        result['price_subtotal'] = taxes['total']
+        	result['price_subtotal_incl'] = taxes['total_included']
+	        return {'value': result}
+
+pos_order_line()
 
 class pos_order(osv.osv):
 	_inherit = 'pos.order'
@@ -204,6 +224,7 @@ class pos_make_payment(osv.osv_memory):
 		if order.test_paid():
 			if order.sale_journal.type == 'sale':
 				# Creates invoice
+				import pdb;pdb.set_trace()
 				self.pool.get('pos.order').create_from_ui_v2(cr,uid,[order.id])
 				order.action_invoice()
 				if order.invoice_id:

@@ -120,6 +120,17 @@
         action="action_ba_cuotas_edit"
         sequence="1"/>
 
+        <record id="account_view_tax_form" model="ir.ui.view">
+            <field name="name">view.tax.form.ba</field>
+            <field name="model">account.tax</field>
+            <field name="inherit_id" ref="account.view_tax_form"/>
+            <field name="arch" type="xml">
+                  <field name="active" position="after">
+			<field name="default_vat_tax" />
+		  </field>
+            </field>
+        </record>
+
         <record id="view_account_journal_pos_user_form_ba" model="ir.ui.view">
             <field name="name">view.account.journal.pos.user.form.ba</field>
             <field name="model">account.journal</field>
@@ -242,6 +253,7 @@
 			<field name="point_of_sale" />
 			<field name="bank_account" />
 			<field name="cash_journal" />
+			<field name="company_id" />
 		</field>
 		<field name="journal_ids" position="after">
 			<group string="Diarios de Venta">

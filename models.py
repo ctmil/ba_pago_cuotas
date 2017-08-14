@@ -16,6 +16,7 @@ from openerp.addons.l10n_ar_fpoc.invoice import document_type_map, responsabilit
 #Get the logger
 _logger = logging.getLogger(__name__)
 
+
 class pos_session_transfer(models.Model):
 	_name = 'pos.session.transfer'
 	_description = 'pos.session.transfer'
@@ -26,7 +27,6 @@ class pos_session_transfer(models.Model):
         date = fields.Date('Fecha')
         amount = fields.Float('Monto')
 	statement_line_id = fields.Many2one('account.bank.statement.line',string='Medio de pago')
-
 
 
 class pos_order_line(models.Model):
@@ -192,22 +192,6 @@ class sale_cuotas(models.Model):
     _description = 'Permite indicar que monto agregar por cobro en cuotas'
     _order = "journal_id , bank_id , cuotas asc"
 
-
-
-    # @api.multi
-    # def name_get(self):
-    #     res = super(sale_cuotas,self).name_get()
-    #     data = []
-    #     min_qty = 0
-    #     for sale_cuota in self:
-    #         if sale_cuota.journal_id and sale_cuota.bank_id and sale_cuota.cuotas:
-    #             display_value = sale_cuota.journal_id.name + ' - ' + sale_cuota.bank_id.bic + ' - ' + str(sale_cuota.cuotas)
-    #         elif self.journal_id  and self.cuotas:
-    #             display_value = self.journal_id.name + ' - ' + str(self.cuotas)
-
-    #         data.append((sale_cuota.id,display_value))
-    #     return data
-
     @api.one
     @api.depends('journal_id','bank_id','cuotas')
     def _compute_name(self):
@@ -228,26 +212,6 @@ class sale_cuotas(models.Model):
             recs = self.search([('name', operator, name)] + args, limit=limit)
         return recs.name_get()
 
-    
-    #@api.one
-    #@api.constrains('cuotas')
-    #def _check_cuotas(self):
-    #    if self.cuotas > 36 or self.cuotas < 1:
-    #        raise ValidationError('La cantidad de cuotas ingresada debe ser menor a 36')
-
-    #@api.one
-    #@api.constrains('coeficiente')
-    #def _check_coeficiente(self):
-    #    if self.coeficiente > 5 or self.coeficiente < 0:
-    #        raise ValidationError('El coeficiente ingresado debe ser entre 0 y 5')
-
-    #@api.one
-    #@api.constrains('bank_id','journal_id','cuotas')
-    #def _check_unique(self):
-    #    cuotas = self.search([('journal_id','=',self.journal_id.id),\
-    #            ('bank_id','=',self.bank_id.id),('cuotas','=',self.cuotas)])
-    #    if len(cuotas) > 1:
-    #        raise ValidationError('El plan de cuotas ya esta ingresado')
     
     name = fields.Char('Nombre',compute=_compute_name,store=True)
 
@@ -300,7 +264,6 @@ class pos_order(models.Model):
                 "res_model": "pos.make.payment",
                 "view_type": "form",
                 "view_mode": "form",
-                #"view_id": "product.product_supplierinfo_form_view",
                 "res_id": wizard_id,
                 "target": "new",
                 "nodestroy": True,
@@ -533,12 +496,6 @@ class pos_return(models.Model):
 		total_amount_w_tax = 0
 		total_amount = 0
 
-		#for line in self.return_line:
-		#	total_amount = total_amount + line.price_subtotal
-		#	total_amount_w_tax = total_amount + line.price_subtotal_w_tax
-		#if total_amount > 0:
-		#	tax_rate = (total_amount_w_tax / total_amount) - 1
-
 		ticket={
                 	"turist_ticket": False,
 	                "debit_note": False,
@@ -642,3 +599,10 @@ class pos_return_line(models.Model):
 	price_subtotal = fields.Float('Subtotal (s/impuestos)')
 	price_subtotal_w_tax = fields.Float('Subtotal (c/impuestos)')
 	tax_rate = fields.Float('% Tax',compute=_compute_tax_rate)
+
+
+class account_tax(models.Model):
+	_inherit = 'account.tax'
+
+	default_vat_tax = fields.Boolean('IVA por defecto',default=False)
+
